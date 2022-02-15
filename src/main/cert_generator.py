@@ -43,7 +43,6 @@ def getpass(prompt: str = "Password: ") -> str:
         elif passwd == '\x7f':
             if password:
                 password = password[:-1]
-                break
         password += passwd
     return password
 
