@@ -1,0 +1,69 @@
+# -*- coding: utf-8 -*-
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+### Alias : CertServer.app & Last Modded : 2022.02.16. ###
+Coded with Python 3.10 Grammar by purplepig4657
+Description : ?
+Reference : ?
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+import os
+import requests
+import socket
+import json
+
+HTTPS_PORT = 443
+HTTP_PORT = 80
+CERT_SERVER_ADDR = '127.0.0.1'
+CERT_SERVER_PORT = HTTPS_PORT
+
+
+def get_private_ip_address() -> str:
+    """ Get the private IP address of the current machine by connecting google dns server.
+    """
+    sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+    try:
+        sock.connect(('8.8.8.8', 80))
+        client_private_ip = sock.getsockname()[0]
+    except OSError as msg:
+        print("Couldn't connect with the socket-server:", msg)
+        client_private_ip = 'error'
+    finally:
+        sock.close()
+
+    return client_private_ip
+
+
+def request_certificate(client_private_ip: str) -> requests.Response:
+    """ Request a certificate from the certificate server(CS).
+    """
+    personal_json = json.dumps({'ip': client_private_ip})
+    headers = {'Content-type': 'application/json', 'Accept': 'text/plain'}
+
+    return requests.post(
+        f"http{'s' if CERT_SERVER_ADDR == 443 else ''}://{CERT_SERVER_ADDR}:{CERT_SERVER_PORT}/cert_request",
+        data=personal_json, headers=headers)
+
+
+def parse_cert_file(response: requests.Response):
+    """ Parse the certificate file from the response.
+    """
+    content_json = response.content
+    content_dict = json.loads(content_json)
+    cert_file = content_dict['crt']
+    key_file = content_dict['key']
+
+    if not os.path.isdir("cert"):
+        os.mkdir("cert")
+
+    with open("cert/PosServer.crt", 'w+') as crt, open("cert/PosServer.key", 'w+') as key:
+        crt.write(cert_file)
+        key.write(key_file)
+
+
+if __name__ == '__main__':
+    private_ip = get_private_ip_address()
+
+    if private_ip == 'error':
+        exit(1)
+
+    cert_req_response = request_certificate(private_ip)
+    parse_cert_file(cert_req_response)
