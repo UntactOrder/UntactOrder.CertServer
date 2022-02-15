@@ -28,12 +28,11 @@ if not path.isdir(CERT_DIR):
     mkdir(CERT_DIR)
 
 if not path.isfile(f"{CERT_DIR}/{CERT_FILE}") or not path.isfile(f"{CERT_DIR}/{KEY_FILE}"):
-    print(f"Certificate files not found. Create a directory called '{CERT_DIR}' automatically"
+    print(f"\nCertificate files not found. Create a directory called '{CERT_DIR}' automatically "
           f"in the same directory as this python file and generate '{CERT_FILE}' and '{KEY_FILE}' files.")
 
     def proceed_certificate_authority_generation():
-        """ Generate a key pair with a 4096 bit RSA key.
-
+        """ Generate CertServer crt file and key file with a 4096 bit RSA key.
         """
         keypair = crypto.PKey()
         keypair.generate_key(TYPE_RSA, 4096)
@@ -44,6 +43,11 @@ if not path.isfile(f"{CERT_DIR}/{CERT_FILE}") or not path.isfile(f"{CERT_DIR}/{K
         city = input("Enter your Location(City): ")
 
         crt = crypto.X509()
+        crt.set_version(2)
+        crt.set_serial_number(1)  # serial number must be unique, but we don't care. ^^
+        crt.gmtime_adj_notBefore(0)  # start time from now
+        crt.gmtime_adj_notAfter(ONE_YEAR * HOW_MANY_YEARS)  # end time
+
         subject = crt.get_subject()
         subject.CN = public_ip  # external ip
         subject.C = country
@@ -51,20 +55,25 @@ if not path.isfile(f"{CERT_DIR}/{CERT_FILE}") or not path.isfile(f"{CERT_DIR}/{K
         subject.L = city
         subject.O = "UntactOrder"
         subject.OU = "A CertServer Instance"
+        crt.add_extensions([  # add extensions; crt does not ues domain name, so need to add subject alternative name.
+            crypto.X509Extension(b"subjectAltName", False, f"IP:{public_ip}".encode('utf-8'))
+        ])  # if the client's ip is not exists at crt ip list, the certificate will be disabled.
+        crt.set_subject(crt.get_subject())
         crt.set_pubkey(keypair)
         crt.sign(keypair, 'sha256')  # sign with the CA(CS) private key.
 
         with open(path.join(CERT_DIR, KEY_FILE), 'w+') as ca_key_file, \
-                open(path.join(CERT_DIR, CERT_FILE), 'w+') as ca_cert_file:
-            ca_key_file.write(crypto.dump_privatekey(FILETYPE_PEM, keypair, passphrase=__PASSPHRASE__).decode())
-            ca_cert_file.write(crypto.dump_certificate(FILETYPE_PEM, crt).decode())
+                open(path.join(CERT_DIR, CERT_FILE), 'w+') as ca_crt_file:
+            ca_key_file.write(crypto.dump_privatekey(
+                FILETYPE_PEM, keypair, cipher='DES3', passphrase=__PASSPHRASE__.encode('utf-8')).decode())
+            ca_crt_file.write(crypto.dump_certificate(FILETYPE_PEM, crt).decode())
             print("Certificate Authority generated successfully.")
 
     proceed_certificate_authority_generation()
 
 with open(path.join(CERT_DIR, CERT_FILE), 'r') as ca_crt_file, open(path.join(CERT_DIR, KEY_FILE), 'r') as ca_key_file:
     __CA_CRT__ = crypto.load_certificate(FILETYPE_PEM, ca_crt_file.read().encode('utf-8'))
-    __CA_KEY__ = crypto.load_privatekey(FILETYPE_PEM, ca_key_file.read(), passphrase=__PASSPHRASE__)
+    __CA_KEY__ = crypto.load_privatekey(FILETYPE_PEM, ca_key_file.read(), passphrase=__PASSPHRASE__.encode('utf-8'))
 
 
 def generate_key() -> crypto.PKey:
