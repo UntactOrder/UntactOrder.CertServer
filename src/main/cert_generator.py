@@ -6,9 +6,46 @@ Description : ?
 Reference : ?
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 from os import path, mkdir
+import sys
 import requests
 from OpenSSL import crypto
 from geocoder import ipinfo
+
+try:
+    from msvcrt import getch
+except ModuleNotFoundError:
+    import tty
+    import termios
+
+    def getch(char_width=1):
+        """get a fixed number of typed characters from the terminal. Linux / Mac only
+        https://www.reddit.com/r/learnpython/comments/7036k5/can_i_use_getch_on_macos_x/"""
+        fd = sys.stdin.fileno()
+        old_settings = termios.tcgetattr(fd)
+        try:
+            tty.setraw(fd)
+            ch = sys.stdin.read(char_width)
+        finally:
+            termios.tcsetattr(fd, termios.TCSADRAIN, old_settings)
+        return ch
+
+
+def getpass(prompt: str = "Password: ") -> str:
+    """ Get password from terminal. (No Echo) """
+    print(prompt, end="", flush=True)
+    password = ""
+    while True:
+        passwd = getch()
+        if passwd == '\r' or passwd == '\n':
+            break
+        elif passwd == '\x03':
+            raise KeyboardInterrupt
+        elif passwd == '\x7f':
+            if password:
+                password = password[:-1]
+                break
+        password += passwd
+    return password
 
 
 IP_API_URL = "https://api.ipify.org"
@@ -21,7 +58,8 @@ HOW_MANY_YEARS = 50
 CERT_DIR = "cert"
 CERT_FILE = "rootCA.crt"
 KEY_FILE = "rootCA.key"
-__PASSPHRASE__ = input("Enter passphrase : ")
+
+__PASSPHRASE__ = getpass("Enter passphrase: ")
 
 # import root CA certificate.
 if not path.isdir(CERT_DIR):
