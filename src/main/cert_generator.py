@@ -6,9 +6,12 @@ Description : ?
 Reference : ?
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 from os import path, mkdir
+import requests
 from OpenSSL import crypto
 from geocoder import ipinfo
 
+
+IP_API_URL = "https://api.ipify.org"
 
 TYPE_RSA = crypto.TYPE_RSA
 FILETYPE_PEM = crypto.FILETYPE_PEM
@@ -18,6 +21,7 @@ HOW_MANY_YEARS = 50
 CERT_DIR = "cert"
 CERT_FILE = "rootCA.crt"
 KEY_FILE = "rootCA.key"
+__PASSPHRASE__ = input("Enter passphrase : ")
 
 # import root CA certificate.
 if not path.isdir(CERT_DIR):
@@ -27,23 +31,40 @@ if not path.isfile(f"{CERT_DIR}/{CERT_FILE}") or not path.isfile(f"{CERT_DIR}/{K
     print(f"Certificate files not found. Create a directory called '{CERT_DIR}' automatically"
           f"in the same directory as this python file and generate '{CERT_FILE}' and '{KEY_FILE}' files.")
 
-    def generate_certificate_authority_key() -> crypto.PKey:
+    def proceed_certificate_authority_generation():
         """ Generate a key pair with a 4096 bit RSA key.
 
         """
         keypair = crypto.PKey()
         keypair.generate_key(TYPE_RSA, 4096)
 
-        return keypair
+        public_ip = requests.get(IP_API_URL).content.decode()
+        country = input("Enter your Country Name: ")
+        region = input("Enter your State: ")
+        city = input("Enter your Location(City): ")
 
-    def generate_certificate_authority_certificate():
+        crt = crypto.X509()
+        subject = crt.get_subject()
+        subject.CN = public_ip  # external ip
+        subject.C = country
+        subject.ST = region
+        subject.L = city
+        subject.O = "UntactOrder"
+        subject.OU = "A CertServer Instance"
+        crt.set_pubkey(keypair)
+        crt.sign(keypair, 'sha256')  # sign with the CA(CS) private key.
 
+        with open(path.join(CERT_DIR, KEY_FILE), 'w+') as ca_key_file, \
+                open(path.join(CERT_DIR, CERT_FILE), 'w+') as ca_cert_file:
+            ca_key_file.write(crypto.dump_privatekey(FILETYPE_PEM, keypair, passphrase=__PASSPHRASE__).decode())
+            ca_cert_file.write(crypto.dump_certificate(FILETYPE_PEM, crt).decode())
+            print("Certificate Authority generated successfully.")
 
-    # def proceed_certificate_authority_generation():
+    proceed_certificate_authority_generation()
 
 with open(path.join(CERT_DIR, CERT_FILE), 'r') as ca_crt_file, open(path.join(CERT_DIR, KEY_FILE), 'r') as ca_key_file:
     __CA_CRT__ = crypto.load_certificate(FILETYPE_PEM, ca_crt_file.read().encode('utf-8'))
-    __CA_KEY__ = crypto.load_privatekey(FILETYPE_PEM, ca_key_file.read(), passphrase=b"qwer")
+    __CA_KEY__ = crypto.load_privatekey(FILETYPE_PEM, ca_key_file.read(), passphrase=__PASSPHRASE__)
 
 
 def generate_key() -> crypto.PKey:
