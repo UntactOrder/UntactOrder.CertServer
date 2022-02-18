@@ -28,7 +28,7 @@ def create_app():
         personal_json = request.get_json()
         # if not '0 < len(json) < 2' or if private_ip from json is not ipv4/ipv6 shape, then it's bad request.
         if not personal_json or len(personal_json) > 1 \
-                or True not in [personal_json['private_ip'].count(i[0]) == i[1] for i in (('.', 3), (':', 7))]:
+                or True not in [personal_json[list(personal_json)[-1]].count(i[0]) == i[1] for i in (('.', 3), (':', 7))]:
             return make_response("Json Parse Error", 400)
         client_private_ip = next(iter(personal_json.values()))  # get internal IP
         crt_dump, key_dump = proceed_certificate_generation(client_public_ip, client_private_ip)  # generate certificate

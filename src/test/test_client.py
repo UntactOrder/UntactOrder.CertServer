@@ -3,17 +3,20 @@
 ### Alias : CertServer.test_client & Last Modded : 2022.02.16. ###
 Coded with Python 3.10 Grammar by purplepig4657
 Description : ?
-Reference : ?
+Reference : [ssl request] https://stackoverflow.com/questions/42982143/python-requests-how-to-use-system-ca-certificates-debian-ubuntu
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 import os
 import requests
 import socket
 import json
 
-HTTPS_PORT = 443
-HTTP_PORT = 80
+HTTPS = "https"
+HTTP = "http"
+CERT_SERVER_PROTOCOL = HTTPS
+if CERT_SERVER_PROTOCOL == HTTPS:
+    os.environ['REQUESTS_CA_BUNDLE'] = 'cert/rootCA.cer'
 CERT_SERVER_ADDR = '127.0.0.1'
-CERT_SERVER_PORT = HTTPS_PORT
+CERT_SERVER_PORT = ""  # ":5000"
 
 
 def get_private_ip_address() -> str:
@@ -39,7 +42,7 @@ def request_certificate(client_private_ip: str) -> requests.Response:
     headers = {'Content-type': 'application/json', 'Accept': 'text/plain'}
 
     return requests.post(
-        f"http{'s' if CERT_SERVER_ADDR == 443 else ''}://{CERT_SERVER_ADDR}:{CERT_SERVER_PORT}/cert_request",
+        f"{CERT_SERVER_PROTOCOL}://{CERT_SERVER_ADDR}{CERT_SERVER_PORT}/cert_request",
         data=personal_json, headers=headers)
 
 
@@ -60,10 +63,19 @@ def parse_cert_file(response: requests.Response):
 
 
 if __name__ == '__main__':
+    respond = requests.get(f"{CERT_SERVER_PROTOCOL}://{CERT_SERVER_ADDR}{CERT_SERVER_PORT}")
+
+    if not respond.status_code == 200:
+        print(respond.text)
+        raise Exception("Couldn't connect with the certificate server.")
+    else:
+        print(respond.content)
+
     private_ip = get_private_ip_address()
 
     if private_ip == 'error':
         exit(1)
 
     cert_req_response = request_certificate(private_ip)
+    print(cert_req_response.text, flush=True)
     parse_cert_file(cert_req_response)

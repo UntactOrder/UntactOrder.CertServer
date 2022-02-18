@@ -138,4 +138,4 @@ dmypy.json
 *.crt
 *.key
 *.pass
-
+*.pem
