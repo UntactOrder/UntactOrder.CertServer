@@ -21,7 +21,7 @@ UntactOrder Cert Server(언택트오더 시스템 인증서 서버) <python 3.10
 ### [EN] Development environment / [KO] 개발 환경
 * IntelliJ IDEA Ultimate 2021.3 (or up)
 * Python 3.10.2 (or up)
-* [Oracle Cloud Free Tier; OCI] Canonical Ubuntu 20.04 (Image Build: 2022.01.18-0)
+* [Oracle Cloud Free Tier; OCI] Canonical Ubuntu 20.04 LTS (Image Build: 2022.01.18-0)
 * [OCI] VM.Standard.E2.1.Micro (1 core OCPU, 1 GB memory, 0.48 Gbps network bandwidth)
 
 ### [EN] Programming Language / [KO] 사용 언어
@@ -47,33 +47,82 @@ UntactOrder Cert Server(언택트오더 시스템 인증서 서버) <python 3.10
 * [KO] 혹시 모르는 문제를 방지하기 위해 깃 레포 클론시에 프로젝트 폴더 이름을 'UntactOrder.'를 제외한 'CertServer'로 지정하는 것을 권장합니다.
 
 ### [EN] Preparations / [KO] 사전 작업
-* [EN] (1). Development environment setting is required (refer to the the development environment part at the top).
-* [KO] (1). 개발 환경 세팅 필요 (상단 개발 환경 설명된 부분 참고)
-** <pre>a. install Intellij IDEA and Python
-b. prepare server resources
-c. install python3.10.2 (or up)</pre>
-* [EN] (2). Update Python Main Version
-* [KO] 파이썬3 호출 키워드로 호출되는 파이썬 버전 변경
+* (1). [EN] Development environment setting is required (refer to the the development environment part at the top)
+* (1). [KO] 개발 환경 세팅 필요 (상단 개발 환경 설명된 부분 참고)
+<pre>a. install Intellij IDEA and Python
+b. prepare server resources | ref: https://www.wsgvet.com/cloud/5
+c. install python3.10.2 (or up) | ref: https://computingforgeeks.com/how-to-install-python-on-ubuntu-linux-system/
+</pre>
+* (2). [EN] Update Python Main Version (linux only, Windows user just use python keyword)
+* (2). [KO] 파이썬3 호출 키워드로 호출되는 파이썬 버전 변경 (리눅스만, 윈도우 사용자는 python 키워드로 사용)
 * [Reference] https://codechacha.com/ko/change-python-version/
 ```sh
-$ ls /usr/bin/ | grep python
+<-- Check the Python version list. -->
+$ ls /usr/bin/ | grep python3
 >> python3
 >> python3
 >> python3.10
 >> python3.8
 ```
-<pre> 
-
-</pre>
-
+```sh
+<-- Change the Python main version -->
+$ sudo update-alternatives --install /usr/bin/python3 python /usr/bin/python3.10 1
+>> update-alternatives: renaming python link from /usr/bin/python3.10 to /usr/bin/python3
+```
+* (3). [EN] Create a new ssh keypair with passphrase and add key to server instance. (Optional)
+* (3). [KO] 오라클 서버 접속을 위한 비밀번호가 있는 ssh 키 페어 생성 후 서버에 등록. (선택적 적용)
+* [Reference] https://story.stevenlab.io/210
+* [Reference] https://my-t-space.tistory.com/31
 ~~~sh
-git clone https://github.com/UntactOrder/UntactOrder.AndroidClientApps.git AndroidClientApps
+<-- Check this on the client -->
+$ ssh -i [key_file] [ubuntu_user_name]@[static_ip]
+~~~
+* (4). [EN] Change the ssh port (Oracle Cloud settings should also be changed)
+* (4). [KO] ssh 포트 변경 (Oracle Cloud 설정도 바꿔야 함)
+* Change ssh setting => Change iptable firewall setting => Change Oracle Cloud setting
+* [Reference] https://www.lesstif.com/lpt/ssh-22-20776114.html
+* [Reference] https://meyouus.tistory.com/135
+~~~sh
+<-- Open new ssh port and drop 22 port -->
+$ sudo iptables -A INPUT -i eth0 -p tcp --dport 22 -j DROP
+$ sudo iptables -I INPUT 5 -p tcp --dport [ssh_port_number] -j ACCEPT
+~~~
+~~~sh
+<-- Check this on the server -->
+$ sudo apt install net-tools
+$ netstat -nap | grep [port_number]
+~~~
+~~~sh
+<-- Check this on the client -->
+$ ssh -i [key_file] [ubuntu_user_name]@[static_ip]
+~~~
+* (5). [EN] Install nginx
+* (5). [KO] nginx 설치
+~~~sh
+<-- Linux -->
+$ sudp apt update -y
+$ sudo apt install nginx
+~~~
+<pre>
+<-- Windows -->
+download stable version from http://nginx.org/en/download.html
+</pre>
+* (6). [EN] git clone
+* (6). [KO] 깃 클론
+~~~sh
+<-- Do this on your home directory. -->
+$ git clone https://github.com/UntactOrder/UntactOrder.CertServer.git CertServer
+$ cd CertServer
+~~~
+* (7). [EN] install required python packages/modules
+* (7). [KO] 파이썬 패키지/모듈 설치
+~~~sh
+$ sudo apt remove python-pip python3-pip
+$ sudo apt install python3.10-distutils python3.10-dev
+$ sudo cp /usr/local/bin/pip3.10 /usr/local/bin/pip3
+$ pip3 install -r ./requirements.txt
 ~~~
 
-<pre>(2). git clone
-
-git clone https://github.com/UntactOrder/UntactOrder.AndroidClientApps.git AndroidClientApps
-</pre>
 <pre>(3). git branch(분기) 변경 - main/beta/dev </pre>
 <pre>(4). 프로젝트 루트에 local.properties 생성
 아래와 같은 내용으로 파일 생성하고, __??__ 형태의 부분 수정하기

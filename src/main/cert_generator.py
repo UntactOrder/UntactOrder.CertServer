@@ -23,15 +23,17 @@ HOW_MANY_YEARS = 50
 CERT_DIR = "cert"
 CERT_FILE = "rootCA.crt"
 KEY_FILE = "rootCA.key"
-
-try:  # [An error may occur in later times] Get a password by an expedient way; waitress checks only part of the argv.
-    __PASSPHRASE__ = sys.argv[[i for i, arg in enumerate(sys.argv) if '--po=' in arg][0]].replace('--po=', '')
-except IndexError:
-    __PASSPHRASE__ = getpass("Enter passphrase: ")
+PASS_FILE = "ssl.pass"
 
 # import root CA certificate.
 if not path.isdir(CERT_DIR):
     mkdir(CERT_DIR)
+
+if path.isfile(f"{CERT_DIR}/{PASS_FILE}"):
+    with open(f"{CERT_DIR}/{PASS_FILE}", 'r') as pass_file:
+        __PASSPHRASE__ = pass_file.read()
+else:
+    __PASSPHRASE__ = getpass("Enter passphrase: ")
 
 if not path.isfile(f"{CERT_DIR}/{CERT_FILE}") or not path.isfile(f"{CERT_DIR}/{KEY_FILE}"):
     print(f"\nCertificate files not found. Create a directory called '{CERT_DIR}' automatically "

@@ -137,4 +137,5 @@ dmypy.json
 # Certificate files
 *.crt
 *.key
+*.pass
 
