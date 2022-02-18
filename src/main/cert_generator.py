@@ -31,7 +31,7 @@ if not path.isdir(CERT_DIR):
 
 if path.isfile(f"{CERT_DIR}/{PASS_FILE}"):
     with open(f"{CERT_DIR}/{PASS_FILE}", 'r') as pass_file:
-        __PASSPHRASE__ = pass_file.read()
+        __PASSPHRASE__ = pass_file.read().replace('\n', '').replace('\r', '')
 else:
     __PASSPHRASE__ = getpass("Enter passphrase: ")
 
