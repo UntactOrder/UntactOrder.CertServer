@@ -19,7 +19,7 @@ def create_app():
     @app.route('/')
     def index():
         """ To check if the server is running """
-        return "Hello, World!"
+        return f"Hello, {request.environ.get('HTTP_X_REAL_IP', request.remote_addr)}!"
 
     @app.route('/cert_request', methods=['POST'])
     def cert_request() -> jsonify:

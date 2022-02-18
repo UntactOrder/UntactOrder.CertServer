@@ -2,8 +2,9 @@
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 ### Alias : CertServer.test_client & Last Modded : 2022.02.16. ###
 Coded with Python 3.10 Grammar by purplepig4657
-Description : ?
+Description : test client for CertServer.
 Reference : [ssl request] https://stackoverflow.com/questions/42982143/python-requests-how-to-use-system-ca-certificates-debian-ubuntu
+                          https://2.python-requests.org/en/master/user/advanced/#ssl-cert-verification
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 import os
 import requests
@@ -14,7 +15,10 @@ HTTPS = "https"
 HTTP = "http"
 CERT_SERVER_PROTOCOL = HTTPS
 if CERT_SERVER_PROTOCOL == HTTPS:
-    os.environ['REQUESTS_CA_BUNDLE'] = 'cert/rootCA.cer'
+    session = requests.Session()
+    session.verify = "cert/rootCA.crt" # False
+else:
+    session = requests
 CERT_SERVER_ADDR = '127.0.0.1'
 CERT_SERVER_PORT = ""  # ":5000"
 
@@ -41,9 +45,9 @@ def request_certificate(client_private_ip: str) -> requests.Response:
     personal_json = json.dumps({'ip': client_private_ip})
     headers = {'Content-type': 'application/json', 'Accept': 'text/plain'}
 
-    return requests.post(
+    return session.post(
         f"{CERT_SERVER_PROTOCOL}://{CERT_SERVER_ADDR}{CERT_SERVER_PORT}/cert_request",
-        data=personal_json, headers=headers)
+        data=personal_json, headers=headers, verify=False)
 
 
 def parse_cert_file(response: requests.Response):
@@ -63,13 +67,13 @@ def parse_cert_file(response: requests.Response):
 
 
 if __name__ == '__main__':
-    respond = requests.get(f"{CERT_SERVER_PROTOCOL}://{CERT_SERVER_ADDR}{CERT_SERVER_PORT}")
+    respond = session.get(f"{CERT_SERVER_PROTOCOL}://{CERT_SERVER_ADDR}{CERT_SERVER_PORT}")
 
     if not respond.status_code == 200:
-        print(respond.text)
+        print(respond.text, flush=True)
         raise Exception("Couldn't connect with the certificate server.")
     else:
-        print(respond.content)
+        print(respond.content.decode(), flush=True)
 
     private_ip = get_private_ip_address()
 
