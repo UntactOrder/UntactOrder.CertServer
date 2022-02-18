@@ -47,15 +47,32 @@ UntactOrder Cert Server(언택트오더 시스템 인증서 서버) <python 3.10
 * [KO] 혹시 모르는 문제를 방지하기 위해 깃 레포 클론시에 프로젝트 폴더 이름을 'UntactOrder.'를 제외한 'CertServer'로 지정하는 것을 권장합니다.
 
 ### [EN] Preparations / [KO] 사전 작업
-<pre>[EN] (1). Development environment setting is required (refer to the the development environment part at the top).
-[KO] (1). 개발 환경 세팅 필요 (상단 개발 환경 설명된 부분 참고)
-a. install Intellij IDEA and Python
+* [EN] (1). Development environment setting is required (refer to the the development environment part at the top).
+* [KO] (1). 개발 환경 세팅 필요 (상단 개발 환경 설명된 부분 참고)
+** <pre>a. install Intellij IDEA and Python
 b. prepare server resources
-c. 
+c. install python3.10.2 (or up)</pre>
+* [EN] (2). Update Python Main Version
+* [KO] 파이썬3 호출 키워드로 호출되는 파이썬 버전 변경
+* [Reference] https://codechacha.com/ko/change-python-version/
+```sh
+$ ls /usr/bin/ | grep python
+>> python3
+>> python3
+>> python3.10
+>> python3.8
+```
+<pre> 
+
 </pre>
+
+~~~sh
+git clone https://github.com/UntactOrder/UntactOrder.AndroidClientApps.git AndroidClientApps
+~~~
+
 <pre>(2). git clone
 
-git clone https://github.com/UntactOrder/UntactOrder.AndroidClientApps.git as AndroidClientApps
+git clone https://github.com/UntactOrder/UntactOrder.AndroidClientApps.git AndroidClientApps
 </pre>
 <pre>(3). git branch(분기) 변경 - main/beta/dev </pre>
 <pre>(4). 프로젝트 루트에 local.properties 생성
