@@ -1,33 +1,58 @@
 # [EN]Untact Order: Non-Contact Order<br/>[KO]언택트 오더: 비대면 주문
 UntactOrder Cert Server(언택트오더 시스템 인증서 서버) <python 3.10>
 
------ 나중에 수정하세요 -----
+> [EN] This is a server for UntactOrder HTTPS Cert System.
+>> The UntactOrder Project is an open-source project that began with the prototype of UntactOrder; 'Non-Contact Order', which was produced through the Design Thinking Process course in the second semester of 2021.
+>>
+>> The goal is to provide a free solution that allows non-face-to-face orders within the store in the form of deferred payment, which is still using face-to-face ordering.
+>
+>> You only need to host this certificate server if you want to implement a new UntactOrder system as a whole, and you won't have to modify CertServer other than that.
+>
+> [KO] 이 서버는 언택트오더 HTTPS 인증서 시스템을 위한 서버입니다.
+>> 언택트오더 프로젝트는 2021년 2학기 어드벤처디자인 수업에서 Design Thinking 과정을 통해 제작되었던 ‘언택트오더; 비대면 주문’ 프로토타입에서 시작된 오픈소스 프로젝트입니다.
+>>
+>> 기존의 대면 주문 방식에서 벗어나 후불 결제 형태의 매장 내에서 비대면으로 주문 할 수 있는 솔루션을 무료로 제공하겠다는 목표를 가지고 있습니다.
+>
+>> 언택트오더 시스템 전체를 새로 구현하고자 할 때만 이 인증서 서버를 호스팅 할 필요가 있으며, 그 이외에는 CertServer를 수정하실 필요는 없을 것입니다.
+>
+> More Information about UntactOrder Project can be found at [UntactOrder Project Notion Page.](https://www.notion.so/cuws/e82c5c200ea642a98f36970e0b49b49b)
 
 
-![로고](/app/src/main/ic_launcher-playstore.png)
-![로고1](/app/src/main/res_ac/mipmap-xxxhdpi/ic_launcher.png)
+### [EN] Development environment / [KO] 개발 환경
+* IntelliJ IDEA Ultimate 2021.3 (or up)
+* Python 3.10.2 (or up)
+* [Oracle Cloud Free Tier; OCI] Canonical Ubuntu 20.04 (Image Build: 2022.01.18-0)
+* [OCI] VM.Standard.E2.1.Micro (1 core OCPU, 1 GB memory, 0.48 Gbps network bandwidth)
 
-### 개발 환경
-* IntelliJ IDEA 2021.3 with Android Extention (or up)
-* Gradle 7.3.3 (or up)
-* Android Gradle Plugin 7.0.4 (or up)
-* Android 11 (Android API 31 Platform JetBrains Runtime) (or up)
+### [EN] Programming Language / [KO] 사용 언어
+* Python 3
 
-### 사용 언어
-* Java/Kotlin
-* XML
-* etc
+### [EN] Required Modules / [KO] 필요 모듈
+* see requirements.txt
 
-### 필요 모듈
-* etc...
+### [EN] License / [KO] 라이센스
+* MIT License
 
-# 설치법
-## 유의사항
-- 프로젝트 경로에 한글 끼워넣지 말자 (계정명이 한글이면... 드라이브 최상위에 클론 해서 빌드 해보고 안되면 ㅠㅠ)
-- 그래들이 . 붙어 있는 경로에서 빌드가 안되는거 같으니 레포 클론할 때 as AndroidClientApps 빼먹지 말자
+# [EN] Usage Instruction / [KO] 사용법
+## [EN] Disclaimer / [KO] 디스클레이머
+* [EN] This software is provided "as is" without warranty of any kind.
+* [EN] The author does not guarantee the stability/security//validity/etc of this software.
+* [KO] 이 소프트웨어는 어떠한 종류의 보증도 없이 "있는 그대로" 제공됩니다.
+* [KO] 저자는 이 소프트웨어의 안정성/보안/유효성/등을 보장하지 않습니다.
 
-### [빌드 전 사전 작업]
-<pre>(1). 개발 환경 세팅 필요 (상단 개발 환경 설명된 부분 참고)</pre>
+## [EN] Precautions / [KO] 유의사항
+* [EN] It is recommended not to use CJK Letters(A.K.A. Jiantizi/Hiragana/Katakana/Hangul) in the project path.
+* [EN] To prevent possible problems, it is recommended to name the project folder 'CertServer' except 'UntactOrder'.
+* [KO] 프로젝트 경로에 CJK 문자(중국 번체/히라가나/가타가나/한글)를 사용하지 않는 것을 권장합니다.
+* [KO] 혹시 모르는 문제를 방지하기 위해 깃 레포 클론시에 프로젝트 폴더 이름을 'UntactOrder.'를 제외한 'CertServer'로 지정하는 것을 권장합니다.
+
+### [EN] Preparations / [KO] 사전 작업
+<pre>[EN] (1). Development environment setting is required (refer to the the development environment part at the top).
+[KO] (1). 개발 환경 세팅 필요 (상단 개발 환경 설명된 부분 참고)
+a. install Intellij IDEA and Python
+b. prepare server resources
+c. 
+</pre>
 <pre>(2). git clone
 
 git clone https://github.com/UntactOrder/UntactOrder.AndroidClientApps.git as AndroidClientApps

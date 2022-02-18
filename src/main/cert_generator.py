@@ -1,11 +1,12 @@
 # -*- coding: utf-8 -*-
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-### Alias : CertServer.app & Last Modded : 2022.02.16. ###
+### Alias : CertServer.cert_generator & Last Modded : 2022.02.16. ###
 Coded with Python 3.10 Grammar by purplepig4657
-Description : ?
+Description : This is a generator script to generate a CertSercer-signed certificate.
 Reference : ?
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 from os import path, mkdir
+import sys
 from getpass import getpass
 import requests
 from OpenSSL import crypto
@@ -23,7 +24,10 @@ CERT_DIR = "cert"
 CERT_FILE = "rootCA.crt"
 KEY_FILE = "rootCA.key"
 
-__PASSPHRASE__ = getpass("Enter passphrase: ")
+try:  # [An error may occur in later times] Get a password by an expedient way; waitress checks only part of the argv.
+    __PASSPHRASE__ = sys.argv[[i for i, arg in enumerate(sys.argv) if '--po=' in arg][0]].replace('--po=', '')
+except IndexError:
+    __PASSPHRASE__ = getpass("Enter passphrase: ")
 
 # import root CA certificate.
 if not path.isdir(CERT_DIR):
@@ -69,7 +73,7 @@ if not path.isfile(f"{CERT_DIR}/{CERT_FILE}") or not path.isfile(f"{CERT_DIR}/{K
             ca_key_file.write(crypto.dump_privatekey(
                 FILETYPE_PEM, keypair, cipher='DES3', passphrase=__PASSPHRASE__.encode('utf-8')).decode())
             ca_crt_file.write(crypto.dump_certificate(FILETYPE_PEM, crt).decode())
-            print("Certificate Authority generated successfully.")
+            print("Certificate Authority generated successfully.\n")
 
     proceed_certificate_authority_generation()
 
