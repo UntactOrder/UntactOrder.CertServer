@@ -108,7 +108,7 @@ $ sudo apt install nginx
 <-- Windows -->
 download stable version from http://nginx.org/en/download.html
 </pre>
-#### (6). [EN] git clone / [KO] 깃 클론
+#### (6). [EN] Git clone / [KO] 깃 클론
 ~~~sh
 <-- Do this on your home directory. -->
 $ git clone https://github.com/UntactOrder/UntactOrder.CertServer.git CertServer
@@ -117,14 +117,14 @@ $ sudo chmod 775 run.sh
 $ sudo chmod 775 start.sh
 $ sudo chmod 775 stop.sh
 ~~~
-#### (7). [EN] install required python packages/modules / [KO] 파이썬 패키지/모듈 설치
+#### (7). [EN] Install required python packages/modules / [KO] 파이썬 패키지/모듈 설치
 ~~~sh
 $ sudo apt install python3.10-distutils python3.10-dev python3.10-venv
 $ curl -sS https://bootstrap.pypa.io/get-pip.py | sudo python3.10
 $ sudo cp /usr/local/bin/pip3.10 /usr/local/bin/pip3
 $ pip3 install -r ./requirements.txt
 ~~~
-#### (8). [EN] set timezone / [KO] 타임존 변경
+#### (8). [EN] Set timezone / [KO] 타임존 변경
 ~~~sh
 $ sudo timedatectl set-timezone Asia/Seoul
 $ timedatectl
@@ -138,24 +138,73 @@ $ timedatectl
 ~~~
 
 ### 1. Set CertServer
-#### (1). [Linux] run run.sh / [Windows] run run.bat
-##### - [EN] run.sh/bat => set passphrase of rootCA certificate => check if server is running
-##### - [KO] run.sh/bat 실행 => rootCA 인증서 비밀번호 생성 => 서버 실행 되는지 확인
+#### (1). [Linux] Run run.sh / [Windows] Run run.bat
+##### - [EN] run.sh/bat => set passphrase of rootCA certificate => create cert files => check if server is running
+##### - [KO] run.sh/bat 실행 => rootCA 인증서 비밀번호 생성 => 인증서 생성 => 서버 실행 되는지 확인
 ```sh
 <-- Check if the server is running. -->
+$ ./run.sh
 >> INFO:waitress:Serving on http://127.0.0.1:5000
 ```
-then, press CTRL+C to terminate server. | 서버 실행 확인 후 CRTL+C 눌러 서버 종료
-#### (2). [Linux] run run.sh / [Windows] run run.bat
-##### - [EN] run.sh/bat => set passphrase of rootCA certificate => check if server is running
-##### - [KO] run.sh/bat 실행 => rootCA 인증서 비밀번호 생성 => 서버 실행 되는지 확인
+then, press CTRL+C to terminate server. / 서버 실행 확인 후 CRTL+C 눌러 서버 종료
+#### (2). [Linux] Run start.sh (daemon) (only linux)
 ```sh
 <-- Check if the server is running. -->
+$ ./start.sh
 >> INFO:waitress:Serving on http://127.0.0.1:5000
 ```
+
 ### 2. Set Nginx
-systemctl status nginx.service
+#### (1). [EN] Open https(443) port (Oracle Cloud settings should also be changed)
+#### (1). [KO] https(443) 포트 열기 (Oracle Cloud 설정도 바꿔야 함)
+##### - Change iptables firewall setting => Change Oracle Cloud setting
+~~~sh
+<-- Open HTTPS port (If you don't set netfilter-personality, it's initialized upon reboot.) -->
+$ sudo iptables -I INPUT 5 -p tcp --dport 443 -j ACCEPT
+$ sudo netfilter-persistent save
+$ sudo netfilter-persistent start
+~~~
+#### (2). [EN] Copy nginx configuration file / [KO] nginx 설정 파일 복붙
+~~~sh
+<-- Linux -->
+$ sudo cp nginx/linux/nginx.conf /etc/nginx/nginx.conf
+~~~
+<pre>
+<-- Windows -->
+copy nginx/windows/nginx.conf to nginx conf folder that you downloaded.
+</pre>
+#### (3). [EN] Modify nginx configuration file / [KO] nginx 설정 파일 수정
+<pre>
+<-- [EN] Modify where you need, including the server_name below. -->
+<-- [KO] 아래 서버 이름을 포함하여 필요한 곳 수정 -->
+[nginx.conf] server_name ___________________YOUR_SERVER_NAME___________________;
+</pre>
+#### (4). [EN] Restart nginx / [KO] nginx 재시작
+~~~sh
+<-- Linux -->
+<-- Restart nginx -->
+$ sudo systemctl restart nginx.service
+or
+$ sudo service nginx restart
+<-- See Status -->
+$ systemctl status nginx.service
+~~~
+~~~sh
+<-- Windows | ref: https://harrydony.tistory.com/665 -->
+nginx                 [start / 시작]
+nginx -s stop         [quick quit / 빠른 종료]
+nginx -s quit         [quit / 일반 종료]
+nginx -s reload       [restart / 재기동]
+nginx -s reopen       [restart logging / 로그파일 다시쓰기 시작]
+~~~
+#### (#). [EN] Nginx Logging / [KO] nginx 로깅
+###### [Reference] https://abbo.tistory.com/177
 
-sudo systemctl restart nginx.service
-sudo service nginx restart
-
+### 3. Defence against DDoS/DoS Attack
+#### (Defence Method 1). [EN] Defense at the level of nginx. / [KO] nginx 레벨에서 방어
+###### [Reference] https://velog.io/@damiano1027/Nginx-DoS-DDoS-%EA%B3%B5%EA%B2%A9-%EB%B0%A9%EC%96%B4-%EC%84%A4%EC%A0%95
+???
+#### (Defence Method 2). [EN] Defense at the level of firewall. (best way) / [KO] 방화벽 레벨에서 방어 (가장 좋은 방법)
+###### [Reference] https://darrengwon.tistory.com/699
+###### [Reference] https://blog.secuof.net/24
+???
