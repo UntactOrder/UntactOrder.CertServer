@@ -3,10 +3,9 @@
 ### Alias : CertServer.cert_generator & Last Modded : 2022.02.16. ###
 Coded with Python 3.10 Grammar by purplepig4657
 Description : This is a generator script to generate a CertSercer-signed certificate.
-Reference : ?
+Reference : [CA certificate] https://www.openssl.org/docs/manmaster/man5/x509v3_config.html
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 from os import path, mkdir
-import sys
 from getpass import getpass
 import requests
 from OpenSSL import crypto
@@ -64,9 +63,30 @@ if not path.isfile(f"{CERT_DIR}/{CERT_FILE}") or not path.isfile(f"{CERT_DIR}/{K
         subject.O = "UntactOrder"
         subject.OU = "A CertServer Instance"
         crt.add_extensions([  # add extensions; crt does not ues domain name, so need to add subject alternative name.
+            # [set this certificate belongs to Certificate Authority(CA)]
+
+            # This is a multi-valued extension which indicates whether a certificate is a CA certificate.
+            # The first value is CA followed by TRUE or FALSE. If CA is TRUE then an optional pathlen name followed
+            # by a nonnegative value can be included.
+            crypto.X509Extension(b'basicConstraints', True, b'CA:TRUE'),
+            # The SKID extension specification has a value with three choices. If the value is the word none then
+            # no SKID extension will be included. If the value is the word hash, or by default for the x509, req,
+            # and ca apps, the process specified in RFC 5280 section 4.2.1.2. (1) is followed: The keyIdentifier is
+            # composed of the 160-bit SHA-1 hash of the value of the BIT STRING subjectPublicKey (excluding the tag,
+            # length, and number of unused bits).
+            crypto.X509Extension(b"subjectKeyIdentifier", False, b"hash", subject=crt),
             crypto.X509Extension(b"subjectAltName", False, f"IP:{public_ip}".encode('utf-8'))
         ])  # if the client's ip is not exists at crt ip list, the certificate will be disabled.
+        crt.add_extensions([
+            # The AKID extension specification may have the value none indicating that no AKID shall be included.
+            # Otherwise it may have the value keyid or issuer or both of them, separated by ,. Either or both can have
+            # the option always, indicated by putting a colon : between the value and this option. For self-signed
+            # certificates the AKID is suppressed unless always is present. By default the x509, req, and ca apps
+            # behave as if none was given for self-signed certificates and keyid, issuer otherwise.
+            crypto.X509Extension(b"authorityKeyIdentifier", False, b"keyid:always", issuer=crt)
+        ])
         crt.set_subject(crt.get_subject())
+        crt.set_issuer(crt.get_subject())
         crt.set_pubkey(keypair)
         crt.sign(keypair, 'SHA256')  # sign with the CA(CS) private key.
 
