@@ -79,7 +79,7 @@ $ ssh -i [key_file] [ubuntu_user_name]@[static_ip]
 ~~~
 #### (4). [EN] Change the ssh port (Oracle Cloud settings should also be changed)
 #### (4). [KO] ssh 포트 변경 (Oracle Cloud 설정도 바꿔야 함)
-##### - Change ssh setting => Change iptable firewall setting => Change Oracle Cloud setting
+##### - Change ssh setting => Change iptables firewall setting => Change Oracle Cloud setting
 ###### [Reference] https://www.lesstif.com/lpt/ssh-22-20776114.html
 ###### [Reference] https://meyouus.tistory.com/135
 ~~~sh
