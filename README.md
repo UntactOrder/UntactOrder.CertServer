@@ -87,8 +87,8 @@ $ ssh -i [key_file] [ubuntu_user_name]@[static_ip]
 $ sudo iptables -A INPUT -i eth0 -p tcp --dport 22 -j DROP
 $ sudo iptables -I INPUT 5 -p tcp --dport [ssh_port_number] -j ACCEPT
 $ sudo apt install iptables-persistent netfilter-persistent
-$ netfilter-persistent save
-$ netfilter-persistent start
+$ sudo netfilter-persistent save
+$ sudo netfilter-persistent start
 ~~~
 ~~~sh
 <-- Check this on the server -->
