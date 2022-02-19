@@ -68,12 +68,12 @@ if not path.isfile(f"{CERT_DIR}/{CERT_FILE}") or not path.isfile(f"{CERT_DIR}/{K
         ])  # if the client's ip is not exists at crt ip list, the certificate will be disabled.
         crt.set_subject(crt.get_subject())
         crt.set_pubkey(keypair)
-        crt.sign(keypair, 'sha256')  # sign with the CA(CS) private key.
+        crt.sign(keypair, 'SHA256')  # sign with the CA(CS) private key.
 
         with open(path.join(CERT_DIR, KEY_FILE), 'w+') as ca_key_file, \
                 open(path.join(CERT_DIR, CERT_FILE), 'w+') as ca_crt_file:
             ca_key_file.write(crypto.dump_privatekey(
-                FILETYPE_PEM, keypair, cipher='DES3', passphrase=__PASSPHRASE__.encode('utf-8')).decode())
+                FILETYPE_PEM, keypair, cipher='AES256', passphrase=__PASSPHRASE__.encode('utf-8')).decode())
             ca_crt_file.write(crypto.dump_certificate(FILETYPE_PEM, crt).decode())
             print("Certificate Authority generated successfully.\n")
 
@@ -112,7 +112,7 @@ def make_certificate_signing_request(
     subject.O = "UntactOrder"
     subject.OU = "A PosServer Instance"
     request.set_pubkey(client_keypair)
-    request.sign(client_keypair, 'sha256')  # sign the request(csr) with the CA(CS) private key.
+    request.sign(client_keypair, 'SHA256')  # sign the request(csr) with the CA(CS) private key.
 
     return request
 
