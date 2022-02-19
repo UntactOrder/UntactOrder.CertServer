@@ -102,7 +102,6 @@ $ ssh -i [key_file] [ubuntu_user_name]@[static_ip]
 #### (5). [EN] Install nginx / [KO] nginx 설치
 ~~~sh
 <-- Linux -->
-$ sudp apt update -y
 $ sudo apt install nginx
 ~~~
 <pre>
@@ -120,8 +119,8 @@ $ sudo chmod 775 stop.sh
 ~~~
 #### (7). [EN] install required python packages/modules / [KO] 파이썬 패키지/모듈 설치
 ~~~sh
-$ sudo apt remove python-pip python3-pip
-$ sudo apt install python3.10-distutils python3.10-dev
+$ sudo apt install python3.10-distutils python3.10-dev python3.10-venv
+$ curl -sS https://bootstrap.pypa.io/get-pip.py | sudo python3.10
 $ sudo cp /usr/local/bin/pip3.10 /usr/local/bin/pip3
 $ pip3 install -r ./requirements.txt
 ~~~
@@ -139,9 +138,21 @@ $ timedatectl
 ~~~
 
 ### 1. Set CertServer
-* ???
-<pre>????</pre>
-
+#### (1). [Linux] run run.sh / [Windows] run run.bat
+##### - [EN] run.sh/bat => set passphrase of rootCA certificate => check if server is running
+##### - [KO] run.sh/bat 실행 => rootCA 인증서 비밀번호 생성 => 서버 실행 되는지 확인
+```sh
+<-- Check if the server is running. -->
+>> INFO:waitress:Serving on http://127.0.0.1:5000
+```
+then, press CTRL+C to terminate server. | 서버 실행 확인 후 CRTL+C 눌러 서버 종료
+#### (2). [Linux] run run.sh / [Windows] run run.bat
+##### - [EN] run.sh/bat => set passphrase of rootCA certificate => check if server is running
+##### - [KO] run.sh/bat 실행 => rootCA 인증서 비밀번호 생성 => 서버 실행 되는지 확인
+```sh
+<-- Check if the server is running. -->
+>> INFO:waitress:Serving on http://127.0.0.1:5000
+```
 ### 2. Set Nginx
 systemctl status nginx.service
 

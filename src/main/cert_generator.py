@@ -5,7 +5,8 @@ Coded with Python 3.10 Grammar by purplepig4657
 Description : This is a generator script to generate a CertSercer-signed certificate.
 Reference : [CA certificate] https://www.openssl.org/docs/manmaster/man5/x509v3_config.html
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-from os import path, mkdir
+from os import path, mkdir, chmod
+import platform
 from getpass import getpass
 import requests
 from OpenSSL import crypto
@@ -19,7 +20,7 @@ FILETYPE_PEM = crypto.FILETYPE_PEM
 ONE_YEAR = 365 * 24 * 60 * 60
 HOW_MANY_YEARS = 65
 
-CERT_DIR = "cert"
+CERT_DIR = "cert" if platform.system() == "Windows" else "/etc/certserver"
 CERT_FILE = "rootCA.crt"
 KEY_FILE = "rootCA.key"
 PASS_FILE = "ssl.pass"
@@ -33,6 +34,9 @@ if path.isfile(f"{CERT_DIR}/{PASS_FILE}"):
         __PASSPHRASE__ = pass_file.read().replace('\n', '').replace('\r', '')
 else:
     __PASSPHRASE__ = getpass("Enter passphrase: ")
+    with open(f"{CERT_DIR}/{PASS_FILE}", 'w+') as pass_file:
+        pass_file.write(__PASSPHRASE__)
+    chmod(f"{CERT_DIR}/{PASS_FILE}", 0o600)
 
 if not path.isfile(f"{CERT_DIR}/{CERT_FILE}") or not path.isfile(f"{CERT_DIR}/{KEY_FILE}"):
     print(f"\nCertificate files not found. Create a directory called '{CERT_DIR}' automatically "
@@ -96,6 +100,8 @@ if not path.isfile(f"{CERT_DIR}/{CERT_FILE}") or not path.isfile(f"{CERT_DIR}/{K
                 FILETYPE_PEM, keypair, cipher='AES256', passphrase=__PASSPHRASE__.encode('utf-8')).decode())
             ca_crt_file.write(crypto.dump_certificate(FILETYPE_PEM, crt).decode())
             print("Certificate Authority generated successfully.\n")
+        chmod(path.join(CERT_DIR, KEY_FILE), 0o600)
+        chmod(path.join(CERT_DIR, CERT_FILE), 0o600)
 
     proceed_certificate_authority_generation()
 
