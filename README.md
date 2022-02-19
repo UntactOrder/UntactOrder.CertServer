@@ -137,7 +137,7 @@ $ timedatectl
 >>           RTC in local TZ: no
 ~~~
 
-### 1. Set CertServer
+## [EN] 1. Set CertServer / [KO] 1. CertServer 설정
 #### (1). [Linux] Run run.sh / [Windows] Run run.bat
 ##### - [EN] run.sh/bat => set passphrase of rootCA certificate => create cert files => check if server is running
 ##### - [KO] run.sh/bat 실행 => rootCA 인증서 비밀번호 생성 => 인증서 생성 => 서버 실행 되는지 확인
@@ -154,7 +154,7 @@ $ ./start.sh
 >> INFO:waitress:Serving on http://127.0.0.1:5000
 ```
 
-### 2. Set Nginx
+## [EN] 2. Set Nginx / [KO] 2. Nginx 설정
 #### (1). [EN] Open https(443) port (Oracle Cloud settings should also be changed)
 #### (1). [KO] https(443) 포트 열기 (Oracle Cloud 설정도 바꿔야 함)
 ##### - Change iptables firewall setting => Change Oracle Cloud setting
@@ -200,7 +200,7 @@ nginx -s reopen       [restart logging / 로그파일 다시쓰기 시작]
 #### (#). [EN] Nginx Logging / [KO] nginx 로깅
 ###### [Reference] https://abbo.tistory.com/177
 
-### 3. Defence against DDoS/DoS Attack
+## [EN] 3. Defence against DDoS/DoS Attack / [KO] 3. DDos/Dos 방어
 #### (Defence Method 1). [EN] Defense at the level of nginx. / [KO] nginx 레벨에서 방어
 ###### [Reference] https://velog.io/@damiano1027/Nginx-DoS-DDoS-%EA%B3%B5%EA%B2%A9-%EB%B0%A9%EC%96%B4-%EC%84%A4%EC%A0%95
 ???
