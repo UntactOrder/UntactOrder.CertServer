@@ -1,4 +1,4 @@
-# [EN]Untact Order: Non-Contact Order<br/>[KO]언택트 오더: 비대면 주문
+# [EN]UntactOrder: Non-Contact Order<br/>[KO]언택트오더: 비대면 주문
 UntactOrder Cert Server(언택트오더 시스템 인증서 서버) <python 3.10>
 
 > [EN] This is a server for UntactOrder HTTPS Cert System.
@@ -18,7 +18,7 @@ UntactOrder Cert Server(언택트오더 시스템 인증서 서버) <python 3.10
 > More Information about UntactOrder Project can be found at [UntactOrder Project Notion Page.](https://www.notion.so/cuws/e82c5c200ea642a98f36970e0b49b49b)
 
 
-### [EN] Development environment / [KO] 개발 환경
+### [EN] Development Environment / [KO] 개발 환경
 * IntelliJ IDEA Ultimate 2021.3 (or up)
 * Python 3.10.2 (or up)
 * [Oracle Cloud Free Tier; OCI] Canonical Ubuntu 20.04 LTS (Image Build: 2022.01.18-0)
@@ -99,8 +99,7 @@ $ netstat -nap | grep [port_number]
 <-- Check this on the client -->
 $ ssh -i [key_file] [ubuntu_user_name]@[static_ip]
 ~~~
-#### (5). [EN] Install nginx
-#### (5). [KO] nginx 설치
+#### (5). [EN] Install nginx / [KO] nginx 설치
 ~~~sh
 <-- Linux -->
 $ sudp apt update -y
@@ -110,8 +109,7 @@ $ sudo apt install nginx
 <-- Windows -->
 download stable version from http://nginx.org/en/download.html
 </pre>
-#### (6). [EN] git clone
-#### (6). [KO] 깃 클론
+#### (6). [EN] git clone / [KO] 깃 클론
 ~~~sh
 <-- Do this on your home directory. -->
 $ git clone https://github.com/UntactOrder/UntactOrder.CertServer.git CertServer
@@ -120,16 +118,14 @@ $ sudo chmod 775 run.sh
 $ sudo chmod 775 start.sh
 $ sudo chmod 775 stop.sh
 ~~~
-#### (7). [EN] install required python packages/modules
-#### (7). [KO] 파이썬 패키지/모듈 설치
+#### (7). [EN] install required python packages/modules / [KO] 파이썬 패키지/모듈 설치
 ~~~sh
 $ sudo apt remove python-pip python3-pip
 $ sudo apt install python3.10-distutils python3.10-dev
 $ sudo cp /usr/local/bin/pip3.10 /usr/local/bin/pip3
 $ pip3 install -r ./requirements.txt
 ~~~
-#### (8). [EN] set timezone
-#### (8). [KO] 타임존 변경
+#### (8). [EN] set timezone / [KO] 타임존 변경
 ~~~sh
 $ sudo timedatectl set-timezone Asia/Seoul
 $ timedatectl
@@ -145,3 +141,10 @@ $ timedatectl
 ### 1. Set CertServer
 * ???
 <pre>????</pre>
+
+### 2. Set Nginx
+systemctl status nginx.service
+
+sudo systemctl restart nginx.service
+sudo service nginx restart
+
