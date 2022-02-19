@@ -42,20 +42,20 @@ UntactOrder Cert Server(언택트오더 시스템 인증서 서버) <python 3.10
 
 ## [EN] Precautions / [KO] 유의사항
 * [EN] It is recommended not to use CJK Letters(A.K.A. Jiantizi/Hiragana/Katakana/Hangul) in the project path.
-* [EN] To prevent possible problems, it is recommended to name the project folder 'CertServer' except 'UntactOrder'.
+* [EN] To prevent possible problems, it is recommended to name the project folder 'CertServer' except 'UntactOrder.'.
 * [KO] 프로젝트 경로에 CJK 문자(중국 번체/히라가나/가타가나/한글)를 사용하지 않는 것을 권장합니다.
 * [KO] 혹시 모르는 문제를 방지하기 위해 깃 레포 클론시에 프로젝트 폴더 이름을 'UntactOrder.'를 제외한 'CertServer'로 지정하는 것을 권장합니다.
 
-### [EN] Preparations / [KO] 사전 작업
-* (1). [EN] Development environment setting is required (refer to the the development environment part at the top)
-* (1). [KO] 개발 환경 세팅 필요 (상단 개발 환경 설명된 부분 참고)
+## [EN] 0. Preparations / [KO] 0. 사전 작업
+#### (1). [EN] Development environment setting is required (refer to the the development environment part at the top)
+#### (1). [KO] 개발 환경 세팅 필요 (상단 개발 환경 설명된 부분 참고)
 <pre>a. install Intellij IDEA and Python
 b. prepare server resources | ref: https://www.wsgvet.com/cloud/5
 c. install python3.10.2 (or up) | ref: https://computingforgeeks.com/how-to-install-python-on-ubuntu-linux-system/
 </pre>
-* (2). [EN] Update Python Main Version (linux only, Windows user just use python keyword)
-* (2). [KO] 파이썬3 호출 키워드로 호출되는 파이썬 버전 변경 (리눅스만, 윈도우 사용자는 python 키워드로 사용)
-* [Reference] https://codechacha.com/ko/change-python-version/
+#### (2). [EN] Update Python Main Version (linux only, Windows user just use python keyword)
+#### (2). [KO] 파이썬3 호출 키워드로 호출되는 파이썬 버전 변경 (리눅스만, 윈도우 사용자는 python 키워드로 사용)
+###### [Reference] https://codechacha.com/ko/change-python-version/
 ```sh
 <-- Check the Python version list. -->
 $ ls /usr/bin/ | grep python3
@@ -69,23 +69,26 @@ $ ls /usr/bin/ | grep python3
 $ sudo update-alternatives --install /usr/bin/python3 python /usr/bin/python3.10 1
 >> update-alternatives: renaming python link from /usr/bin/python3.10 to /usr/bin/python3
 ```
-* (3). [EN] Create a new ssh keypair with passphrase and add key to server instance. (Optional)
-* (3). [KO] 오라클 서버 접속을 위한 비밀번호가 있는 ssh 키 페어 생성 후 서버에 등록. (선택적 적용)
-* [Reference] https://story.stevenlab.io/210
-* [Reference] https://my-t-space.tistory.com/31
+#### (3). [EN] Create a new ssh keypair with passphrase and add key to server instance. (Optional)
+#### (3). [KO] 오라클 서버 접속을 위한 비밀번호가 있는 ssh 키 페어 생성 후 서버에 등록. (선택적 적용)
+###### [Reference] https://story.stevenlab.io/210
+###### [Reference] https://my-t-space.tistory.com/31
 ~~~sh
 <-- Check this on the client -->
 $ ssh -i [key_file] [ubuntu_user_name]@[static_ip]
 ~~~
-* (4). [EN] Change the ssh port (Oracle Cloud settings should also be changed)
-* (4). [KO] ssh 포트 변경 (Oracle Cloud 설정도 바꿔야 함)
-* Change ssh setting => Change iptable firewall setting => Change Oracle Cloud setting
-* [Reference] https://www.lesstif.com/lpt/ssh-22-20776114.html
-* [Reference] https://meyouus.tistory.com/135
+#### (4). [EN] Change the ssh port (Oracle Cloud settings should also be changed)
+#### (4). [KO] ssh 포트 변경 (Oracle Cloud 설정도 바꿔야 함)
+##### - Change ssh setting => Change iptable firewall setting => Change Oracle Cloud setting
+###### [Reference] https://www.lesstif.com/lpt/ssh-22-20776114.html
+###### [Reference] https://meyouus.tistory.com/135
 ~~~sh
-<-- Open new ssh port and drop 22 port -->
+<-- Open new ssh port and drop 22 port (If you don't set netfilter-personality, it's initialized upon reboot.) -->
 $ sudo iptables -A INPUT -i eth0 -p tcp --dport 22 -j DROP
 $ sudo iptables -I INPUT 5 -p tcp --dport [ssh_port_number] -j ACCEPT
+$ sudo apt install iptables-persistent netfilter-persistent
+$ netfilter-persistent save
+$ netfilter-persistent start
 ~~~
 ~~~sh
 <-- Check this on the server -->
@@ -96,8 +99,8 @@ $ netstat -nap | grep [port_number]
 <-- Check this on the client -->
 $ ssh -i [key_file] [ubuntu_user_name]@[static_ip]
 ~~~
-* (5). [EN] Install nginx
-* (5). [KO] nginx 설치
+#### (5). [EN] Install nginx
+#### (5). [KO] nginx 설치
 ~~~sh
 <-- Linux -->
 $ sudp apt update -y
@@ -107,23 +110,26 @@ $ sudo apt install nginx
 <-- Windows -->
 download stable version from http://nginx.org/en/download.html
 </pre>
-* (6). [EN] git clone
-* (6). [KO] 깃 클론
+#### (6). [EN] git clone
+#### (6). [KO] 깃 클론
 ~~~sh
 <-- Do this on your home directory. -->
 $ git clone https://github.com/UntactOrder/UntactOrder.CertServer.git CertServer
 $ cd CertServer
+$ sudo chmod 775 run.sh
+$ sudo chmod 775 start.sh
+$ sudo chmod 775 stop.sh
 ~~~
-* (7). [EN] install required python packages/modules
-* (7). [KO] 파이썬 패키지/모듈 설치
+#### (7). [EN] install required python packages/modules
+#### (7). [KO] 파이썬 패키지/모듈 설치
 ~~~sh
 $ sudo apt remove python-pip python3-pip
 $ sudo apt install python3.10-distutils python3.10-dev
 $ sudo cp /usr/local/bin/pip3.10 /usr/local/bin/pip3
 $ pip3 install -r ./requirements.txt
 ~~~
-* (8). [EN] set timezone
-* (8). [KO] 타임존 변경
+#### (8). [EN] set timezone
+#### (8). [KO] 타임존 변경
 ~~~sh
 $ sudo timedatectl set-timezone Asia/Seoul
 $ timedatectl
@@ -136,6 +142,6 @@ $ timedatectl
 >>           RTC in local TZ: no
 ~~~
 
-### 1. ??
+### 1. Set CertServer
 * ???
 <pre>????</pre>
