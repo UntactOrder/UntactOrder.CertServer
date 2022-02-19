@@ -152,7 +152,7 @@ def create_certificate(csr: crypto.X509Req, client_private_ip: str) -> bytes:
         crypto.X509Extension(b"subjectAltName", False, f"IP:{client_private_ip}".encode('utf-8'))
     ])  # if the client's ip is not exists at crt ip list, the certificate will be disabled.
     crt.set_pubkey(csr.get_pubkey())  # set client public key from the CSR to the crt.
-    crt.sign(__CA_KEY__, "sha256")  # sign the crt with the CA(CS) private key.
+    crt.sign(__CA_KEY__, "SHA256")  # sign the crt with the CA(CS) private key.
 
     return crypto.dump_certificate(FILETYPE_PEM, crt)  # dump the certificate to bytes.
 
