@@ -18,7 +18,7 @@ IP_API_URL = "https://api.ipify.org"
 TYPE_RSA = crypto.TYPE_RSA
 FILETYPE_PEM = crypto.FILETYPE_PEM
 ONE_YEAR = 365 * 24 * 60 * 60
-HOW_MANY_YEARS = 50
+HOW_MANY_YEARS = 65
 
 CERT_DIR = "cert"
 CERT_FILE = "rootCA.crt"
