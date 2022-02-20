@@ -66,7 +66,7 @@ $ ls /usr/bin/ | grep python3
 ```
 ```sh
 <-- Change the Python main version -->
-$ sudo update-alternatives --install /usr/bin/python3 python /usr/bin/python3.10 1
+$ sudo update-alternatives --install /usr/bin/python3 python3 /usr/bin/python3.10 1
 >> update-alternatives: renaming python link from /usr/bin/python3.10 to /usr/bin/python3
 ```
 #### (3). [EN] Create a new ssh keypair with passphrase and add key to server instance. (Optional)
@@ -97,7 +97,7 @@ $ netstat -nap | grep [port_number]
 ~~~
 ~~~sh
 <-- Check this on the client -->
-$ ssh -i [key_file] [ubuntu_user_name]@[static_ip]
+$ ssh -p [port_number] -i [key_file] [ubuntu_user_name]@[static_ip]
 ~~~
 #### (5). [EN] Install nginx / [KO] nginx 설치
 ~~~sh
@@ -119,10 +119,22 @@ $ sudo chmod 775 stop.sh
 ~~~
 #### (7). [EN] Install required python packages/modules / [KO] 파이썬 패키지/모듈 설치
 ~~~sh
-$ sudo apt install python3.10-distutils python3.10-dev python3.10-venv
+<-- Fix pip. -->
+$ sudo apt install python3.10-distutils python3.10-dev python3.10-venv python3.10-gdbm python3.10-tk
 $ curl -sS https://bootstrap.pypa.io/get-pip.py | sudo python3.10
 $ sudo cp /usr/local/bin/pip3.10 /usr/local/bin/pip3
+$ sudo ln -f -s /usr/lib/python3/dist-packages/apt_init.cpython-38-x86_64-linux-gnu.so /usr/lib/python3/dist-packages/apt_init.so
+$ sudo ln -f -s /usr/lib/python3/dist-packages/apt_pkg.cpython-38-x86_64-linux-gnu.so /usr/lib/python3/dist-packages/apt_pkg.so
+$ echo "export PATH=\"/home/ubuntu/.local/bin:\$PATH\"" >> ~/.bashrc && source ~/.bashrc
+~~~
+~~~sh
+<-- Run pip in user mode. - if you don't need to open CertServer with root permission. -->
 $ pip3 install -r ./requirements.txt
+
+<-- Run pip in superuser mode. - if you need to open CertServer with root permission. -->
+<-- For automatic password entry, waitress must be executed as root. So, use this command. -->
+<-- Be careful when you use pip as the root. -->
+$ sudo pip3 install -r ./requirements.txt
 ~~~
 #### (8). [EN] Set timezone / [KO] 타임존 변경
 ~~~sh

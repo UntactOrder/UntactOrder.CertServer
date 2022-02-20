@@ -16,7 +16,7 @@ HTTP = "http"
 CERT_SERVER_PROTOCOL = HTTPS
 if CERT_SERVER_PROTOCOL == HTTPS:
     session = requests.Session()
-    session.verify = "cert/rootCA.crt" # False
+    session.verify = "cert/rootCA.crt"
 else:
     session = requests
 CERT_SERVER_ADDR = '127.0.0.1'
