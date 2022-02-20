@@ -4,6 +4,7 @@
 Coded with Python 3.10 Grammar by purplepig4657
 Description : This is a generator script to generate a CertSercer-signed certificate.
 Reference : [CA certificate] https://www.openssl.org/docs/manmaster/man5/x509v3_config.html
+            [add subject, authority key] https://stackoverflow.com/questions/14972345/creating-self-signed-certificate-using-pyopenssl
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 from os import path, mkdir, chmod
 import platform
@@ -81,7 +82,7 @@ if not path.isfile(f"{CERT_DIR}/{CERT_FILE}") or not path.isfile(f"{CERT_DIR}/{K
             crypto.X509Extension(b"subjectKeyIdentifier", False, b"hash", subject=crt),
             crypto.X509Extension(b"subjectAltName", False, f"IP:{public_ip}".encode('utf-8'))
         ])  # if the client's ip is not exists at crt ip list, the certificate will be disabled.
-        # in this situation, authority subject key using a reference to CA
+        # in this situation, authority key using a reference to CA, which is subject key
         # so, if add 'subjectKeyIdentifier' and 'authorityKeyIdentifier' extensions at the same time,
         # it will make error
         crt.add_extensions([
