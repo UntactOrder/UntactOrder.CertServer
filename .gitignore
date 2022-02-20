@@ -139,3 +139,6 @@ dmypy.json
 *.key
 *.pass
 *.pem
+
+# Mac .Ds_Store files
+.DS_Store

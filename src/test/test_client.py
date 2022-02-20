@@ -47,7 +47,7 @@ def request_certificate(client_private_ip: str) -> requests.Response:
 
     return session.post(
         f"{CERT_SERVER_PROTOCOL}://{CERT_SERVER_ADDR}{CERT_SERVER_PORT}/cert_request",
-        data=personal_json, headers=headers, verify=False)
+        data=personal_json, headers=headers)
 
 
 def parse_cert_file(response: requests.Response):
