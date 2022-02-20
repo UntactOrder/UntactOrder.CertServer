@@ -81,6 +81,9 @@ if not path.isfile(f"{CERT_DIR}/{CERT_FILE}") or not path.isfile(f"{CERT_DIR}/{K
             crypto.X509Extension(b"subjectKeyIdentifier", False, b"hash", subject=crt),
             crypto.X509Extension(b"subjectAltName", False, f"IP:{public_ip}".encode('utf-8'))
         ])  # if the client's ip is not exists at crt ip list, the certificate will be disabled.
+        # in this situation, authority subject key using a reference to CA
+        # so, if add 'subjectKeyIdentifier' and 'authorityKeyIdentifier' extensions at the same time,
+        # it will make error
         crt.add_extensions([
             # The AKID extension specification may have the value none indicating that no AKID shall be included.
             # Otherwise it may have the value keyid or issuer or both of them, separated by ,. Either or both can have
