@@ -3,6 +3,9 @@ __pycache__/
 *.py[cod]
 *$py.class
 
+# Mac .Ds_Store files
+.DS_Store
+
 # C extensions
 *.so
 
@@ -139,6 +142,3 @@ dmypy.json
 *.key
 *.pass
 *.pem
-
-# Mac .Ds_Store files
-.DS_Store
