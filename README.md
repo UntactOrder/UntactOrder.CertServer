@@ -168,6 +168,7 @@ then, press CTRL+C to terminate server. / 서버 실행 확인 후 CRTL+C 눌러
 $ ./start.sh
 >> INFO:waitress:Serving on http://127.0.0.1:5000
 ```
+if you terminate the server, then you can run stop.sh.`
 
 ## [EN] 2. Set Nginx / [KO] 2. Nginx 설정
 #### (1). [EN] Open https(443) port (Oracle Cloud settings should also be changed)

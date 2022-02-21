@@ -26,11 +26,19 @@ try:
     __PASSPHRASE__ = sys.argv[[i for i, arg in enumerate(sys.argv) if '--po=' in arg][0]]\
         .replace('--po=', '').replace('\n', '').replace('\r', '')
 except IndexError:
-    __PASSPHRASE__ = getpass("Enter passphrase: ")
+    if OS == "Windows" and path.isfile(f"{CERT_DIR}/{PASS_FILE}"):
+        with open(f"{CERT_DIR}/{PASS_FILE}", 'r') as pass_file:
+            __PASSPHRASE__ = pass_file.read().replace('\n', '').replace('\r', '')
+    else:
+        __PASSPHRASE__ = getpass("Enter passphrase: ")
 try:
     __KEY_FILE__ = sys.argv[[i for i, arg in enumerate(sys.argv) if '--ho=' in arg][0]].replace('--ho=', '')
 except IndexError:
-    __KEY_FILE__ = getpass("Enter certificate key: ")
+    if OS == "Windows" and path.isfile(f"{CERT_DIR}/{KEY_FILE}"):
+        with open(f"{CERT_DIR}/{KEY_FILE}", 'r') as ca_key_file:
+            __KEY_FILE__ = ca_key_file.read()
+    else:
+        __KEY_FILE__ = getpass("Enter certificate key: ")
 
 with open(path.join(CERT_DIR, CERT_FILE), 'r') as ca_crt_file:
     __CA_CRT__ = crypto.load_certificate(FILETYPE_PEM, ca_crt_file.read().encode('utf-8'))
