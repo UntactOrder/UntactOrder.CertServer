@@ -25,6 +25,8 @@ if not path.isfile(f"{CERT_DIR}/{CERT_FILE}"):
 try:
     __PASSPHRASE__ = sys.argv[[i for i, arg in enumerate(sys.argv) if '--po=' in arg][0]]\
         .replace('--po=', '').replace('\n', '').replace('\r', '')
+    if __PASSPHRASE__ == '':
+        raise IndexError
 except IndexError:
     if OS == "Windows" and path.isfile(f"{CERT_DIR}/{PASS_FILE}"):
         with open(f"{CERT_DIR}/{PASS_FILE}", 'r') as pass_file:
@@ -33,6 +35,8 @@ except IndexError:
         __PASSPHRASE__ = getpass("Enter passphrase: ")
 try:
     __KEY_FILE__ = sys.argv[[i for i, arg in enumerate(sys.argv) if '--ho=' in arg][0]].replace('--ho=', '')
+    if __KEY_FILE__ == '':
+        raise IndexError
 except IndexError:
     if OS == "Windows" and path.isfile(f"{CERT_DIR}/{KEY_FILE}"):
         with open(f"{CERT_DIR}/{KEY_FILE}", 'r') as ca_key_file:
