@@ -2,8 +2,8 @@
 sudo -i -u root bash << EOF
 echo -n "INFO:get passphrase and certificate key with permission of "
 whoami
-passphrase=value=$(</etc/certserver/ssl.pass)
-key=value=$(</etc/certserver/rootCA.key)
+passphrase=$(</etc/certserver/ssl.pass)
+key=$(</etc/certserver/rootCA.key)
 EOF
 
 echo -n "INFO:server open with permission of "
