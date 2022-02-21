@@ -1,117 +1,40 @@
 # -*- coding: utf-8 -*-
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-### Alias : CertServer.cert_generator & Last Modded : 2022.02.16. ###
+### Alias : CertServer.cert_generator & Last Modded : 2022.02.21. ###
 Coded with Python 3.10 Grammar by purplepig4657
 Description : This is a generator script to generate a CertSercer-signed certificate.
 Reference : [CA certificate] https://www.openssl.org/docs/manmaster/man5/x509v3_config.html
             [add subject, authority key] https://stackoverflow.com/questions/14972345/creating-self-signed-certificate-using-pyopenssl
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-from os import path, mkdir, chmod
-import platform
+from os import path
+import sys
 from getpass import getpass
-import requests
-from OpenSSL import crypto
 from geocoder import ipinfo
 
+from settings import *
 
-IP_API_URL = "https://api.ipify.org"
 
-TYPE_RSA = crypto.TYPE_RSA
-FILETYPE_PEM = crypto.FILETYPE_PEM
-ONE_YEAR = 365 * 24 * 60 * 60
-HOW_MANY_YEARS = 65
+# [import root CA certificate.]
+# check if root CA certificate is exist.
+if not path.isfile(f"{CERT_DIR}/{CERT_FILE}"):
+    print(f"Certificate files not found. You must init(generate a certificate) first.")
+    sys.exit(1)
 
-CERT_DIR = "cert" if platform.system() == "Windows" else "/etc/certserver"
-CERT_FILE = "rootCA.crt"
-KEY_FILE = "rootCA.key"
-PASS_FILE = "ssl.pass"
-
-# import root CA certificate.
-if not path.isdir(CERT_DIR):
-    mkdir(CERT_DIR)
-
-if path.isfile(f"{CERT_DIR}/{PASS_FILE}"):
-    with open(f"{CERT_DIR}/{PASS_FILE}", 'r') as pass_file:
-        __PASSPHRASE__ = pass_file.read().replace('\n', '').replace('\r', '')
-else:
+# ***** An error may occur in later times. *****
+# get a passphrase and key by an expedient way; waitress checks only part of the argv.
+try:
+    __PASSPHRASE__ = sys.argv[[i for i, arg in enumerate(sys.argv) if '--po=' in arg][0]]\
+        .replace('--po=', '').replace('\n', '').replace('\r', '')
+except IndexError:
     __PASSPHRASE__ = getpass("Enter passphrase: ")
-    with open(f"{CERT_DIR}/{PASS_FILE}", 'w+') as pass_file:
-        pass_file.write(__PASSPHRASE__)
-    chmod(f"{CERT_DIR}/{PASS_FILE}", 0o600)
+try:
+    __KEY_FILE__ = sys.argv[[i for i, arg in enumerate(sys.argv) if '--ho=' in arg][0]].replace('--ho=', '')
+except IndexError:
+    __KEY_FILE__ = getpass("Enter certificate key: ")
 
-if not path.isfile(f"{CERT_DIR}/{CERT_FILE}") or not path.isfile(f"{CERT_DIR}/{KEY_FILE}"):
-    print(f"\nCertificate files not found. Create a directory called '{CERT_DIR}' automatically "
-          f"in the same directory as this python file and generate '{CERT_FILE}' and '{KEY_FILE}' files.")
-
-    def proceed_certificate_authority_generation():
-        """ Generate CertServer crt file and key file with a 4096 bit RSA key.
-        """
-        keypair = crypto.PKey()
-        keypair.generate_key(TYPE_RSA, 4096)
-
-        public_ip = requests.get(IP_API_URL).content.decode()
-        country = input("Enter your Country Name: ")
-        region = input("Enter your State: ")
-        city = input("Enter your Location(City): ")
-
-        crt = crypto.X509()
-        crt.set_version(2)
-        crt.set_serial_number(1)  # serial number must be unique, but we don't care. ^^
-        crt.gmtime_adj_notBefore(0)  # start time from now
-        crt.gmtime_adj_notAfter(ONE_YEAR * HOW_MANY_YEARS)  # end time
-
-        subject = crt.get_subject()
-        subject.CN = public_ip  # external ip
-        subject.C = country
-        subject.ST = region
-        subject.L = city
-        subject.O = "UntactOrder"
-        subject.OU = "A CertServer Instance"
-        crt.add_extensions([  # add extensions; crt does not ues domain name, so need to add subject alternative name.
-            # [set this certificate belongs to Certificate Authority(CA)]
-
-            # This is a multi-valued extension which indicates whether a certificate is a CA certificate.
-            # The first value is CA followed by TRUE or FALSE. If CA is TRUE then an optional pathlen name followed
-            # by a nonnegative value can be included.
-            crypto.X509Extension(b'basicConstraints', True, b'CA:TRUE'),
-            # The SKID extension specification has a value with three choices. If the value is the word none then
-            # no SKID extension will be included. If the value is the word hash, or by default for the x509, req,
-            # and ca apps, the process specified in RFC 5280 section 4.2.1.2. (1) is followed: The keyIdentifier is
-            # composed of the 160-bit SHA-1 hash of the value of the BIT STRING subjectPublicKey (excluding the tag,
-            # length, and number of unused bits).
-            crypto.X509Extension(b"subjectKeyIdentifier", False, b"hash", subject=crt),
-            crypto.X509Extension(b"subjectAltName", False, f"IP:{public_ip}".encode('utf-8'))
-        ])  # if the client's ip is not exists at crt ip list, the certificate will be disabled.
-        # in this situation, authority key using a reference to CA, which is subject key
-        # so, if add 'subjectKeyIdentifier' and 'authorityKeyIdentifier' extensions at the same time,
-        # it will make error
-        crt.add_extensions([
-            # The AKID extension specification may have the value none indicating that no AKID shall be included.
-            # Otherwise it may have the value keyid or issuer or both of them, separated by ,. Either or both can have
-            # the option always, indicated by putting a colon : between the value and this option. For self-signed
-            # certificates the AKID is suppressed unless always is present. By default the x509, req, and ca apps
-            # behave as if none was given for self-signed certificates and keyid, issuer otherwise.
-            crypto.X509Extension(b"authorityKeyIdentifier", False, b"keyid:always", issuer=crt)
-        ])
-        crt.set_subject(crt.get_subject())
-        crt.set_issuer(crt.get_subject())
-        crt.set_pubkey(keypair)
-        crt.sign(keypair, 'SHA256')  # sign with the CA(CS) private key.
-
-        with open(path.join(CERT_DIR, KEY_FILE), 'w+') as ca_key_file, \
-                open(path.join(CERT_DIR, CERT_FILE), 'w+') as ca_crt_file:
-            ca_key_file.write(crypto.dump_privatekey(
-                FILETYPE_PEM, keypair, cipher='AES256', passphrase=__PASSPHRASE__.encode('utf-8')).decode())
-            ca_crt_file.write(crypto.dump_certificate(FILETYPE_PEM, crt).decode())
-            print("Certificate Authority generated successfully.\n")
-        chmod(path.join(CERT_DIR, KEY_FILE), 0o600)
-        chmod(path.join(CERT_DIR, CERT_FILE), 0o600)
-
-    proceed_certificate_authority_generation()
-
-with open(path.join(CERT_DIR, CERT_FILE), 'r') as ca_crt_file, open(path.join(CERT_DIR, KEY_FILE), 'r') as ca_key_file:
+with open(path.join(CERT_DIR, CERT_FILE), 'r') as ca_crt_file:
     __CA_CRT__ = crypto.load_certificate(FILETYPE_PEM, ca_crt_file.read().encode('utf-8'))
-    __CA_KEY__ = crypto.load_privatekey(FILETYPE_PEM, ca_key_file.read(), passphrase=__PASSPHRASE__.encode('utf-8'))
+__CA_KEY__ = crypto.load_privatekey(FILETYPE_PEM, __KEY_FILE__, passphrase=__PASSPHRASE__.encode('utf-8'))
 
 
 def generate_key() -> crypto.PKey:

@@ -102,7 +102,7 @@ $ ssh -p [port_number] -i [key_file] [ubuntu_user_name]@[static_ip]
 #### (5). [EN] Install nginx / [KO] nginx 설치
 ~~~sh
 <-- Linux -->
-$ sudo apt install nginx
+$ sudo apt install nginx nginx-extras
 ~~~
 <pre>
 <-- Windows -->
@@ -151,10 +151,13 @@ $ timedatectl
 
 ## [EN] 1. Set CertServer / [KO] 1. CertServer 설정
 #### (1). [Linux] Run run.sh / [Windows] Run run.bat
-##### - [EN] run.sh/bat => set passphrase of rootCA certificate => create cert files => check if server is running
-##### - [KO] run.sh/bat 실행 => rootCA 인증서 비밀번호 생성 => 인증서 생성 => 서버 실행 되는지 확인
+##### - [EN] set passphrase of rootCA certificate (init.py) => create cert files => check if server is running (run.sh/bat)
+##### - [KO] rootCA 인증서 비밀번호 생성 (init.py) => 인증서 생성 => 서버 실행 되는지 확인 (run.sh/bat 실행)
 ```sh
-<-- Check if the server is running. -->
+<-- After initialization, check if the server is running. -->
+$ cd src/main
+$ sudo python3 ./init.py
+$ cd ../../
 $ ./run.sh
 >> INFO:waitress:Serving on http://127.0.0.1:5000
 ```
