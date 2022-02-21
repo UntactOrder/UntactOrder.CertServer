@@ -51,7 +51,7 @@ def set_certificate_passphrase():
     # write rootCA certificate password to file.
     with open(f"{CERT_DIR}/{PASS_FILE}", 'w+') as pass_file:
         pass_file.write(__PASSPHRASE__)
-    chmod(f"{CERT_DIR}/{PASS_FILE}", 0o600)
+    chmod(f"{CERT_DIR}/{PASS_FILE}", 0o600)  # can only root user read and write.
     return __PASSPHRASE__
 
 
@@ -118,8 +118,8 @@ def proceed_certificate_authority_generation():
         ca_key_file.write(crt_dump.decode())
         ca_crt_file.write(key_dump.decode())
         print("RESULT: Certificate Authority generated successfully.\n")
-    chmod(path.join(CERT_DIR, KEY_FILE), 0o600)
-    chmod(path.join(CERT_DIR, CERT_FILE), 0o644)
+    chmod(path.join(CERT_DIR, KEY_FILE), 0o600)  # can only root user read and write
+    chmod(path.join(CERT_DIR, CERT_FILE), 0o644)  # can any user read
 
 
 if __name__ == '__main__':
