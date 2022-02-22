@@ -113,9 +113,9 @@ download stable version from http://nginx.org/en/download.html
 <-- Do this on your home directory. -->
 $ git clone https://github.com/UntactOrder/UntactOrder.CertServer.git CertServer
 $ cd CertServer
-$ sudo chmod 775 run.sh
-$ sudo chmod 775 start.sh
-$ sudo chmod 775 stop.sh
+$ chmod 775 run.sh
+$ chmod 775 start.sh
+$ chmod 775 stop.sh
 ~~~
 #### (7). [EN] Install required python packages/modules / [KO] 파이썬 패키지/모듈 설치
 ~~~sh
@@ -158,14 +158,14 @@ $ timedatectl
 $ cd src/main
 $ sudo python3 ./init.py
 $ cd ../../
-$ ./run.sh
+$ sudo ./run.sh
 >> INFO:waitress:Serving on http://127.0.0.1:5000
 ```
 then, press CTRL+C to terminate server. / 서버 실행 확인 후 CRTL+C 눌러 서버 종료
 #### (2). [Linux] Run start.sh (daemon) (only linux)
 ```sh
 <-- Check if the server is running. -->
-$ ./start.sh
+$ sudo ./start.sh
 >> INFO:waitress:Serving on http://127.0.0.1:5000
 ```
 if you terminate the server, then you can run stop.sh.`

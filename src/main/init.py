@@ -43,6 +43,9 @@ def set_certificate_passphrase():
         if __PASSPHRASE__ == "":
             print("ERROR: passphrase cannot be empty.\n")
             continue
+        elif __PASSPHRASE__[0] in ('#', '$'):
+            print("ERROR: passphrase cannot start with '#' or '$'.\n")
+            continue
         elif __PASSPHRASE__ == getpass("Enter passphrase again: ").replace(" ", ""):  # check passphrase is same.
             break
         else:
@@ -56,7 +59,7 @@ def set_certificate_passphrase():
 
 
 def proceed_certificate_authority_generation():
-    """ Generate CertServer crt file and key file with a 4096 bit RSA key. """
+    """ Generate CertServer crt file and key file with a 4096bit RSA key. """
     __PASSPHRASE__ = set_certificate_passphrase()
 
     keypair = crypto.PKey()
@@ -102,7 +105,7 @@ def proceed_certificate_authority_generation():
         # The AKID extension specification may have the value none indicating that no AKID shall be included.
         # Otherwise, it may have the value keyid or issuer or both of them, separated by ,. Either or both can have
         # the option always, indicated by putting a colon : between the value and this option. For self-signed
-        # certificates the AKID is suppressed unless always is present. By default the x509, req, and ca apps
+        # certificates the AKID is suppressed unless always is present. By default, the x509, req, and ca apps
         # behave as if none was given for self-signed certificates and keyid, issuer otherwise.
         crypto.X509Extension(b"authorityKeyIdentifier", False, b"keyid:always", issuer=crt)
     ])

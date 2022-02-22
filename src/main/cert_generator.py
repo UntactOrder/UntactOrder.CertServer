@@ -50,9 +50,7 @@ __CA_KEY__ = crypto.load_privatekey(FILETYPE_PEM, __KEY_FILE__, passphrase=__PAS
 
 
 def generate_key() -> crypto.PKey:
-    """ Generate a key pair with a 4096 bit RSA key.
-        This key is going to be send to the client.
-    """
+    """ Generate a key pair with a 4096bit RSA key. This key is going to be sent to the client. """
     keypair = crypto.PKey()
     keypair.generate_key(TYPE_RSA, 4096)
 
@@ -83,8 +81,7 @@ def make_certificate_signing_request(
 
 
 def create_certificate(csr: crypto.X509Req, client_private_ip: str) -> bytes:
-    """ Create a certificate from the CSR.
-        The certificate is signed by the CA(CS)."""
+    """ Create a certificate from the CSR. That certificate is signed by the CA(CS). """
     crt = crypto.X509()  # create a certificate object
     crt.set_version(2)
     crt.set_serial_number(1)  # serial number must be unique, but we don't care. ^^
@@ -103,8 +100,7 @@ def create_certificate(csr: crypto.X509Req, client_private_ip: str) -> bytes:
 
 
 def proceed_certificate_generation(client_public_ip: str, client_private_ip: str) -> (bytes, bytes):
-    """ Proceed the certificate generation.
-    """
+    """ Proceed the certificate generation. """
     # generate a key pair.
     client_keypair = generate_key()
     key_dump = crypto.dump_privatekey(FILETYPE_PEM, client_keypair)
