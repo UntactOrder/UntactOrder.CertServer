@@ -43,7 +43,7 @@ def set_certificate_passphrase():
         if __PASSPHRASE__ == "":
             print("ERROR: passphrase cannot be empty.\n")
             continue
-        elif __PASSPHRASE__[0] in ('#', '$'):
+        elif '$' in __PASSPHRASE__:
             print("ERROR: you should not use '$' in passphrase for bash auto input compatibility.\n")
             continue
         elif __PASSPHRASE__ == getpass("Enter passphrase again: ").replace(" ", ""):  # check passphrase is same.
