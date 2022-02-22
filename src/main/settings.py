@@ -21,3 +21,13 @@ CERT_DIR = "cert" if OS == "Windows" else "/etc/certserver"
 CERT_FILE = "rootCA.crt"
 KEY_FILE = "rootCA.key"
 PASS_FILE = "ssl.pass"
+
+
+ORGANIZATION = "UntactOrder"
+
+
+class UnitType(object):
+    unit_text = "A % Instance"
+    CERT = unit_text.replace('%', "CertServer")
+    BRIDGE = unit_text.replace('%', "BridgeServer")
+    POS = unit_text.replace('%', "PosServer")

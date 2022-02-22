@@ -81,8 +81,8 @@ def proceed_certificate_authority_generation():
     subject.C = country
     subject.ST = region
     subject.L = city
-    subject.O = "UntactOrder"
-    subject.OU = "A CertServer Instance"
+    subject.O = ORGANIZATION
+    subject.OU = UnitType.CERT
     crt.add_extensions([  # add extensions; crt does not ues domain name, so need to add subject alternative name.
         # [set this certificate belongs to Certificate Authority(CA)]
 
@@ -114,12 +114,12 @@ def proceed_certificate_authority_generation():
     crt.set_pubkey(keypair)
     crt.sign(keypair, 'SHA256')  # sign with the CA(CS) private key.
 
-    crt_dump = crypto.dump_privatekey(FILETYPE_PEM, keypair, cipher='AES256', passphrase=__PASSPHRASE__.encode('utf-8'))
-    key_dump = crypto.dump_certificate(FILETYPE_PEM, crt)
+    key_dump = crypto.dump_privatekey(FILETYPE_PEM, keypair, cipher='AES256', passphrase=__PASSPHRASE__.encode('utf-8'))
+    crt_dump = crypto.dump_certificate(FILETYPE_PEM, crt)
     with open(path.join(CERT_DIR, KEY_FILE), 'w+') as ca_key_file, \
             open(path.join(CERT_DIR, CERT_FILE), 'w+') as ca_crt_file:
-        ca_key_file.write(crt_dump.decode())
-        ca_crt_file.write(key_dump.decode())
+        ca_key_file.write(key_dump.decode())
+        ca_crt_file.write(crt_dump.decode())
         print("RESULT: Certificate Authority generated successfully.\n")
     chmod(path.join(CERT_DIR, KEY_FILE), 0o600)  # can only root user read and write
     chmod(path.join(CERT_DIR, CERT_FILE), 0o644)  # can any user read

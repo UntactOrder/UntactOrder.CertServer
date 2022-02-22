@@ -37,6 +37,8 @@ try:
     __KEY_FILE__ = sys.argv[[i for i, arg in enumerate(sys.argv) if '--ho=' in arg][0]].replace('--ho=', '')
     if __KEY_FILE__ == '':
         raise IndexError
+    elif __KEY_FILE__[-1] != '\n':
+        __KEY_FILE__ += '\n'
 except IndexError:
     if OS == "Windows" and path.isfile(f"{CERT_DIR}/{KEY_FILE}"):
         with open(f"{CERT_DIR}/{KEY_FILE}", 'r') as ca_key_file:
@@ -57,8 +59,8 @@ def generate_key() -> crypto.PKey:
     return keypair
 
 
-def make_certificate_signing_request(
-        client_keypair: crypto.PKey, client_public_ip: str, client_private_ip: str) -> crypto.X509Req:
+def make_certificate_signing_request(client_type: str, client_keypair: crypto.PKey,
+                                     client_public_ip: str, client_private_ip: str) -> crypto.X509Req:
     """ Make a certificate signing request, that is originally used to request for signing to the CA(CS) by the client.
         But, in this case, the client does not send the CSR to the CA, instead, the CA make CSR and do the signing.
     """
@@ -72,8 +74,8 @@ def make_certificate_signing_request(
     subject.C = country
     subject.ST = region
     subject.L = city
-    subject.O = "UntactOrder"
-    subject.OU = "A PosServer Instance"
+    subject.O = ORGANIZATION
+    subject.OU = client_type
     request.set_pubkey(client_keypair)
     request.sign(client_keypair, 'SHA256')  # sign the request(csr) with the CA(CS) private key.
 
@@ -99,14 +101,14 @@ def create_certificate(csr: crypto.X509Req, client_private_ip: str) -> bytes:
     return crypto.dump_certificate(FILETYPE_PEM, crt)  # dump the certificate to bytes.
 
 
-def proceed_certificate_generation(client_public_ip: str, client_private_ip: str) -> (bytes, bytes):
+def proceed_certificate_generation(client_type: str, client_public_ip: str, client_private_ip: str) -> (bytes, bytes):
     """ Proceed the certificate generation. """
     # generate a key pair.
     client_keypair = generate_key()
     key_dump = crypto.dump_privatekey(FILETYPE_PEM, client_keypair)
 
     # make a certificate signing request.
-    csr = make_certificate_signing_request(client_keypair, client_public_ip, client_private_ip)
+    csr = make_certificate_signing_request(client_type, client_keypair, client_public_ip, client_private_ip)
 
     # create a certificate dump.
     crt_dump = create_certificate(csr, client_private_ip)
