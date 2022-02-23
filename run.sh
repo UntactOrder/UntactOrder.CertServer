@@ -4,7 +4,7 @@ whoami
 passphrase="$(</etc/certserver/ssl.pass)"
 key="$(cat /etc/certserver/rootCA.key)"
 
-run_date=date "+%Y.%m.%d_%H:%M:%S"
+run_date=`date "+%Y.%m.%d_%H:%M:%S"`
 
 sudo -u ubuntu bash << EOF
 echo -n "INFO:server open with permission of "
