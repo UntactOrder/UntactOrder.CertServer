@@ -6,49 +6,13 @@ Description : This is a generator script to generate a CertSercer-signed certifi
 Reference : [CA certificate] https://www.openssl.org/docs/manmaster/man5/x509v3_config.html
             [add subject, authority key] https://stackoverflow.com/questions/14972345/creating-self-signed-certificate-using-pyopenssl
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-from os import path
-import sys
-from getpass import getpass
 from geocoder import ipinfo
 
 from settings import *
 
 
 # [import root CA certificate.]
-# check if root CA certificate is exist.
-if not path.isfile(f"{CERT_DIR}/{CERT_FILE}"):
-    print(f"Certificate files not found. You must init(generate a certificate) first.")
-    sys.exit(1)
-
-# ***** An error may occur in later times. *****
-# get a passphrase and key by an expedient way; waitress checks only part of the argv.
-try:
-    __PASSPHRASE__ = sys.argv[[i for i, arg in enumerate(sys.argv) if '--po=' in arg][0]]\
-        .replace('--po=', '').replace('\n', '').replace('\r', '')
-    if __PASSPHRASE__ == '':
-        raise IndexError
-except IndexError:
-    if OS == "Windows" and path.isfile(f"{CERT_DIR}/{PASS_FILE}"):
-        with open(f"{CERT_DIR}/{PASS_FILE}", 'r') as pass_file:
-            __PASSPHRASE__ = pass_file.read().replace('\n', '').replace('\r', '')
-    else:
-        __PASSPHRASE__ = getpass("Enter passphrase: ")
-try:
-    __KEY_FILE__ = sys.argv[[i for i, arg in enumerate(sys.argv) if '--ho=' in arg][0]].replace('--ho=', '')
-    if __KEY_FILE__ == '':
-        raise IndexError
-    elif __KEY_FILE__[-1] != '\n':
-        __KEY_FILE__ += '\n'
-except IndexError:
-    if OS == "Windows" and path.isfile(f"{CERT_DIR}/{KEY_FILE}"):
-        with open(f"{CERT_DIR}/{KEY_FILE}", 'r') as ca_key_file:
-            __KEY_FILE__ = ca_key_file.read()
-    else:
-        __KEY_FILE__ = getpass("Enter certificate key: ")
-
-with open(path.join(CERT_DIR, CERT_FILE), 'r') as ca_crt_file:
-    __CA_CRT__ = crypto.load_certificate(FILETYPE_PEM, ca_crt_file.read().encode('utf-8'))
-__CA_KEY__ = crypto.load_privatekey(FILETYPE_PEM, __KEY_FILE__, passphrase=__PASSPHRASE__.encode('utf-8'))
+__ROOT_CA__ = RootCA()
 
 
 def generate_key() -> crypto.PKey:
@@ -77,7 +41,7 @@ def make_certificate_signing_request(client_type: str, client_keypair: crypto.PK
     subject.O = ORGANIZATION
     subject.OU = client_type
     request.set_pubkey(client_keypair)
-    request.sign(client_keypair, 'SHA256')  # sign the request(csr) with the CA(CS) private key.
+    request.sign(client_keypair, SHA256)  # sign the request(csr) with the CA(CS) private key.
 
     return request
 
@@ -90,13 +54,13 @@ def create_certificate(csr: crypto.X509Req, client_private_ip: str) -> bytes:
 
     crt.gmtime_adj_notBefore(0)  # start time from now
     crt.gmtime_adj_notAfter(ONE_YEAR * HOW_MANY_YEARS)  # end time
-    crt.set_issuer(__CA_CRT__.get_subject())  # set root CA information.
+    __ROOT_CA__.set_issuer(csr)  # set root CA information.
     crt.set_subject(csr.get_subject())  # set client information from the CSR.
     crt.add_extensions([  # add extensions; crt does not ues domain name, so we need to add subject alternative name.
         crypto.X509Extension(b"subjectAltName", False, f"IP:{client_private_ip}".encode('utf-8'))
     ])  # if the client's ip is not exists at crt ip list, the certificate will be disabled.
     crt.set_pubkey(csr.get_pubkey())  # set client public key from the CSR to the crt.
-    crt.sign(__CA_KEY__, 'SHA256')  # sign the crt with the CA(CS) private key.
+    __ROOT_CA__.sign(crt)  # sign the crt with the CA(CS) private key.
 
     return crypto.dump_certificate(FILETYPE_PEM, crt)  # dump the certificate to bytes.
 

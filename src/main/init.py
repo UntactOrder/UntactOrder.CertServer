@@ -6,9 +6,7 @@ Description : This is a generator script to generate a CertSercer-signed certifi
 Reference : [CA certificate] https://www.openssl.org/docs/manmaster/man5/x509v3_config.html
             [add subject, authority key] https://stackoverflow.com/questions/14972345/creating-self-signed-certificate-using-pyopenssl
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-from os import path, mkdir, chmod, environ
-import sys
-from getpass import getpass
+from os import mkdir, chmod, environ
 import requests
 
 from settings import *
