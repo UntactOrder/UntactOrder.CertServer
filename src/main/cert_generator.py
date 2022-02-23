@@ -54,7 +54,7 @@ def create_certificate(csr: crypto.X509Req, client_private_ip: str) -> bytes:
 
     crt.gmtime_adj_notBefore(0)  # start time from now
     crt.gmtime_adj_notAfter(ONE_YEAR * HOW_MANY_YEARS)  # end time
-    __ROOT_CA__.set_issuer(csr)  # set root CA information.
+    __ROOT_CA__.set_issuer(crt)  # set root CA information.
     crt.set_subject(csr.get_subject())  # set client information from the CSR.
     crt.add_extensions([  # add extensions; crt does not ues domain name, so we need to add subject alternative name.
         crypto.X509Extension(b"subjectAltName", False, f"IP:{client_private_ip}".encode('utf-8'))

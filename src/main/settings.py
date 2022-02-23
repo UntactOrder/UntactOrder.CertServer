@@ -80,10 +80,10 @@ class RootCA(object):
         with open(path.join(CERT_DIR, CERT_FILE), 'r') as ca_crt_file:
             self.__CA_CRT__ = crypto.load_certificate(FILETYPE_PEM, ca_crt_file.read().encode('utf-8'))
 
-    def set_issuer(self, crt):
+    def set_issuer(self, crt: crypto.X509):
         """ Set root CA information."""
         crt.set_issuer(self.__CA_CRT__.get_subject())
 
-    def sign(self, crt):
+    def sign(self, crt: crypto.X509):
         """ Sign the crt with the CA(CS) private key. """
         crt.sign(self.__CA_KEY__, SHA256)
