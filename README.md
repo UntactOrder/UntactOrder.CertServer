@@ -166,9 +166,13 @@ then, press CTRL+C to terminate server. / 서버 실행 확인 후 CRTL+C 눌러
 ```sh
 <-- Check if the server is running. -->
 $ sudo ./start.sh
+>> INFO:get passphrase and certificate key with permission of root
+>> INFO:server open with permission of ubuntu
+>> nohup: redirecting stderr to stdout
+$ cat waitress-serve.log
 >> INFO:waitress:Serving on http://127.0.0.1:5000
 ```
-if you terminate the server, then you can run stop.sh.`
+if you terminate the server, then you can run stop.sh. / 서버를 종료하려면 stop.sh 실행
 
 ## [EN] 2. Set Nginx / [KO] 2. Nginx 설정
 #### (1). [EN] Open https(443) port (Oracle Cloud settings should also be changed)
