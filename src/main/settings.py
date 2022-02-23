@@ -52,13 +52,13 @@ class RootCA(object):
         # check if redirection flag is set.
         if [i for i, arg in enumerate(sys.argv) if '--po=' in arg]:  # if --po= is in argv => redirect.
             __PASSPHRASE__ = input()
-            print("Passphrase entered by redirection.")
             __CA_ENCRYPTED_KEY__ = ""
             while True:
                 try:
                     __CA_ENCRYPTED_KEY__ += input() + '\n'
                 except EOFError:
                     break
+            print("Passphrase entered by redirection.")
             print("Certificate Key entered by redirection.")
         elif OS == "Windows" and path.isfile(f"{CERT_DIR}/{PASS_FILE}"):  # if passphrase file is exist (windows only).
             with open(f"{CERT_DIR}/{PASS_FILE}", 'r') as pass_file, open(f"{CERT_DIR}/{KEY_FILE}", 'r') as ca_key_file:
