@@ -39,7 +39,7 @@ class UnitType(object):
 
 class RootCA(object):
     """ RootCA Keypair Storage Object """
-    
+
     def __init__(self):
         # check if root CA certificate is exist.
         if not path.isfile(f"{CERT_DIR}/{CERT_FILE}"):
@@ -51,13 +51,15 @@ class RootCA(object):
         #
         # check if redirection flag is set.
         if [i for i, arg in enumerate(sys.argv) if '--po=' in arg]:  # if --po= is in argv => redirect.
-            __PASSPHRASE__ = input("Enter passphrase by redirection: ")
-            __CA_ENCRYPTED_KEY__ = input("Enter certificate key by redirection: ") + '\n'
+            __PASSPHRASE__ = input()
+            print("Passphrase entered by redirection.")
+            __CA_ENCRYPTED_KEY__ = ""
             while True:
                 try:
                     __CA_ENCRYPTED_KEY__ += input() + '\n'
                 except EOFError:
                     break
+            print("Certificate Key entered by redirection.")
         elif OS == "Windows" and path.isfile(f"{CERT_DIR}/{PASS_FILE}"):  # if passphrase file is exist (windows only).
             with open(f"{CERT_DIR}/{PASS_FILE}", 'r') as pass_file, open(f"{CERT_DIR}/{KEY_FILE}", 'r') as ca_key_file:
                 __PASSPHRASE__ = pass_file.read().replace('\n', '').replace('\r', '')
