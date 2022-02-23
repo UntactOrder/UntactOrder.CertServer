@@ -18,6 +18,8 @@ UntactOrder Cert Server(언택트오더 시스템 인증서 서버) <python 3.10
 > More Information about UntactOrder Project can be found at [UntactOrder Project Notion Page.](https://www.notion.so/cuws/e82c5c200ea642a98f36970e0b49b49b)
 
 
+#### # CertServer API Reference - [Click here](https://cuws.notion.site/CertServer-API-Reference-c412ef61d0934c64ae02634342643df2)
+
 ### [EN] Development Environment / [KO] 개발 환경
 * IntelliJ IDEA Ultimate 2021.3 (or up)
 * Python 3.10.2 (or up)
