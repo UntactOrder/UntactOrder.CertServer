@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-### Alias : CertServer.cert_generator & Last Modded : 2022.02.21. ###
+### Alias : CertServer.cert_generator & Last Modded : 2022.02.26. ###
 Coded with Python 3.10 Grammar by purplepig4657
 Description : This is a generator script to generate a CertSercer-signed certificate.
 Reference : [CA certificate] https://www.openssl.org/docs/manmaster/man5/x509v3_config.html
