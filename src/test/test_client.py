@@ -22,6 +22,8 @@ else:
 CERT_SERVER_ADDR = '127.0.0.1'
 CERT_SERVER_PORT = ""  # ":5000"
 
+UNIT_TYPE = "pos"
+
 
 def get_private_ip_address() -> str:
     """ Get the private IP address of the current machine by connecting google dns server.
@@ -42,12 +44,14 @@ def get_private_ip_address() -> str:
 def request_certificate(client_private_ip: str) -> requests.Response:
     """ Request a certificate from the certificate server(CS).
     """
-    personal_json = json.dumps({'ip': client_private_ip})
-    headers = {'Content-type': 'application/json', 'Accept': 'text/plain'}
-
-    return session.post(
-        f"{CERT_SERVER_PROTOCOL}://{CERT_SERVER_ADDR}{CERT_SERVER_PORT}/cert_request/pos",
-        data=personal_json, headers=headers)
+    if UNIT_TYPE == "pos":
+        personal_json = json.dumps({'ip': client_private_ip})
+        headers = {'Content-type': 'application/json', 'Accept': 'text/plain'}
+        return session.post(
+            f"{CERT_SERVER_PROTOCOL}://{CERT_SERVER_ADDR}{CERT_SERVER_PORT}/cert_request/{UNIT_TYPE}",
+            data=personal_json, headers=headers)
+    elif UNIT_TYPE == "bridge":
+        return session.post(f"{CERT_SERVER_PROTOCOL}://{CERT_SERVER_ADDR}{CERT_SERVER_PORT}/cert_request/{UNIT_TYPE}")
 
 
 def parse_cert_file(response: requests.Response):
@@ -61,7 +65,7 @@ def parse_cert_file(response: requests.Response):
     if not os.path.isdir("cert"):
         os.mkdir("cert")
 
-    with open("cert/PosServer.crt", 'w+') as crt, open("cert/PosServer.key", 'w+') as key:
+    with open(f"cert/{UNIT_TYPE}.crt", 'w+') as crt, open(f"cert/{UNIT_TYPE}.key", 'w+') as key:
         crt.write(cert_file)
         key.write(key_file)
 
@@ -80,6 +84,13 @@ if __name__ == '__main__':
     if private_ip == 'error':
         exit(1)
 
+    print(f"\n\nRequesting certificate for PosServer......", flush=True)
     cert_req_response = request_certificate(private_ip)
+    print(cert_req_response.text, flush=True)
+    parse_cert_file(cert_req_response)
+
+    print(f"\n\nRequesting certificate for BridgeServer......", flush=True)
+    UNIT_TYPE = "bridge"
+    cert_req_response = request_certificate("")
     print(cert_req_response.text, flush=True)
     parse_cert_file(cert_req_response)
