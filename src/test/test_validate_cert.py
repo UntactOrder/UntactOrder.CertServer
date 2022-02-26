@@ -12,7 +12,7 @@ from datetime import datetime
 FILETYPE_PEM = crypto.FILETYPE_PEM
 
 CERT_DIR = "cert"
-UNIT_TYPE = "pos"
+UNIT_TYPE = "test"
 CERT_FILE = f"{UNIT_TYPE}.crt"
 KEY_FILE = f"{UNIT_TYPE}.key"
 
@@ -45,8 +45,15 @@ def get_data_from_extensions(ext):
             if "CA:TRUE" == ext.__str__():
                 print("Certificate is a CA")
         case "subjectAltName":
-            if "IP Address" in ext.__str__():
-                print("IP:", ext.__str__().replace("IP Address:", ""))
+            alt_name = ext.__str__()
+            print("The subjectAltName:", alt_name)
+            alt_list = alt_name.split(", ")
+            # DNS
+            [print(f"DNS.{i+1}:", alt.replace("DNS:", ''))
+             for i, alt in enumerate([alt for alt in alt_list if alt.startswith("DNS:")])]
+            # IP
+            [print(f"IP.{i+1}:", alt.replace("IP Address:", ''))
+             for i, alt in enumerate([alt for alt in alt_list if alt.startswith("IP Address:")])]
 
 
 print("\nRoot CA Extensions --------------------------------------------------")
@@ -88,11 +95,19 @@ print(serial_list)
 
 
 # get cert signature algorithm
-print("Signature Algorithm:", cert_obj.get_signature_algorithm())
+print("Signature Algorithm:", cert_obj.get_signature_algorithm().decode())
 
 
 # get cert subject
-print("Subject:", cert_obj.get_subject())
+subject = cert_obj.get_subject()
+print("Subject:", subject)
+print("] Country Name:", subject.countryName)
+print("] State or Province Name:", subject.stateOrProvinceName)
+print("] Locality Name:", subject.localityName)
+print("] Organization Name:", subject.organizationName)
+print("] Organization Unit Name:", subject.organizationalUnitName)
+print("] Common Name:", subject.commonName)
+print("] Email Address:", subject.emailAddress)
 
 
 # get cert version
