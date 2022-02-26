@@ -57,8 +57,8 @@ def create_certificate(client_type: str, csr: crypto.X509Req, client_public_ip: 
     __ROOT_CA__.set_issuer(crt)  # set root CA information.
     crt.set_subject(csr.get_subject())  # set client information from the CSR.
     crt.add_extensions([  # add extensions; crt does not ues domain name, so we need to add subject alternative name.
-        crypto.X509Extension(b"subjectAltName", False, f"IP{f'.{i}' if UnitType.POS else ''}:{ip}".encode('utf-8'))
-        for i, ip in enumerate([client_public_ip, client_private_ip]) if ip
+        crypto.X509Extension(b"subjectAltName", False, f"IP{f'.{i+1}' if client_type == UnitType.POS else ''}:{ip}"
+                             .encode('utf-8')) for i, ip in enumerate([client_public_ip, client_private_ip]) if ip
         # IP1: external ip, IP2: internal ip (in case of PosServer)
         # IP: external ip (in case of BridgeServer)
     ])  # if the client's ip is not exists at crt ip list, the certificate will be disabled.
