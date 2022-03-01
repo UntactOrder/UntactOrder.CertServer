@@ -5,6 +5,7 @@ Coded with Python 3.10 Grammar by purplepig4657
 Description : This is a generator script to generate a CertSercer-signed certificate.
 Reference : [CA certificate] https://www.openssl.org/docs/manmaster/man5/x509v3_config.html
             [add subject, authority key] https://stackoverflow.com/questions/14972345/creating-self-signed-certificate-using-pyopenssl
+                                         https://rohanc.me/valid-x509-certs-pyopenssl/
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 from geocoder import ipinfo
 
@@ -56,6 +57,7 @@ def create_certificate(client_type: str, csr: crypto.X509Req, client_public_ip: 
     crt.gmtime_adj_notAfter(ONE_YEAR * HOW_MANY_YEARS)  # end time
     __ROOT_CA__.set_issuer(crt)  # set root CA information.
     crt.set_subject(csr.get_subject())  # set client information from the CSR.
+    crt.set_pubkey(csr.get_pubkey())  # set client public key from the CSR to the crt.
     crt.add_extensions([  # add extensions; crt does not ues domain name, so we need to add subject alternative name.
         # The SKID extension specification has a value with three choices. If the value is the word none then
         # no SKID extension will be included. If the value is the word hash, or by default for the x509, req,
@@ -70,7 +72,6 @@ def create_certificate(client_type: str, csr: crypto.X509Req, client_public_ip: 
         # IP: external ip (in case of BridgeServer)
     ])  # if the client's ip is not exists at crt ip list, the certificate will be disabled.
     __ROOT_CA__.set_authority_key_identifier(crt)
-    crt.set_pubkey(csr.get_pubkey())  # set client public key from the CSR to the crt.
     __ROOT_CA__.sign(crt)  # sign the crt with the CA(CS) private key.
 
     return crypto.dump_certificate(FILETYPE_PEM, crt)  # dump the certificate to bytes.
