@@ -81,6 +81,9 @@ def proceed_certificate_authority_generation():
     subject.L = city
     subject.O = ORGANIZATION
     subject.OU = UnitType.CERT
+    crt.set_subject(crt.get_subject())
+    crt.set_issuer(crt.get_subject())
+    crt.set_pubkey(keypair)
     crt.add_extensions([  # add extensions; crt does not ues domain name, so need to add subject alternative name.
         # [set this certificate belongs to Certificate Authority(CA)]
 
@@ -107,9 +110,6 @@ def proceed_certificate_authority_generation():
         # behave as if none was given for self-signed certificates and keyid, issuer otherwise.
         crypto.X509Extension(b"authorityKeyIdentifier", False, b"keyid:always", issuer=crt)
     ])
-    crt.set_subject(crt.get_subject())
-    crt.set_issuer(crt.get_subject())
-    crt.set_pubkey(keypair)
     crt.sign(keypair, 'SHA256')  # sign with the CA(CS) private key.
 
     key_dump = crypto.dump_privatekey(FILETYPE_PEM, keypair, cipher='AES256', passphrase=__PASSPHRASE__.encode('utf-8'))
