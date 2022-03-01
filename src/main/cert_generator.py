@@ -57,12 +57,19 @@ def create_certificate(client_type: str, csr: crypto.X509Req, client_public_ip: 
     __ROOT_CA__.set_issuer(crt)  # set root CA information.
     crt.set_subject(csr.get_subject())  # set client information from the CSR.
     crt.add_extensions([  # add extensions; crt does not ues domain name, so we need to add subject alternative name.
+        # The SKID extension specification has a value with three choices. If the value is the word none then
+        # no SKID extension will be included. If the value is the word hash, or by default for the x509, req,
+        # and ca apps, the process specified in RFC 5280 section 4.2.1.2. (1) is followed: The keyIdentifier is
+        # composed of the 160-bit SHA-1 hash of the value of the BIT STRING subjectPublicKey (excluding the tag,
+        # length, and number of unused bits).
+        crypto.X509Extension(b"subjectKeyIdentifier", False, b"hash", subject=crt),
         crypto.X509Extension(b"subjectAltName", False, ", ".join([
             f"IP{f'.{i+1}' if client_type == UnitType.POS else ''}:{ip}"
             for i, ip in enumerate([client_public_ip, client_private_ip]) if ip]).encode('utf-8'))
         # IP1: external ip, IP2: internal ip (in case of PosServer)
         # IP: external ip (in case of BridgeServer)
     ])  # if the client's ip is not exists at crt ip list, the certificate will be disabled.
+    __ROOT_CA__.set_authority_key_identifier(crt)
     crt.set_pubkey(csr.get_pubkey())  # set client public key from the CSR to the crt.
     __ROOT_CA__.sign(crt)  # sign the crt with the CA(CS) private key.
 

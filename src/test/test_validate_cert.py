@@ -41,6 +41,10 @@ def get_data_from_extensions(ext):
     ext_type = ext.get_short_name().decode()
     print("The short type name:", ext_type)
     match ext_type:
+        case "subjectKeyIdentifier":
+            print(ext.__str__())
+        case "authorityKeyIdentifier":
+            print(ext.__str__())
         case "basicConstraints":
             if "CA:TRUE" == ext.__str__():
                 print("Certificate is a CA")

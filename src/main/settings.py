@@ -87,3 +87,14 @@ class RootCA(object):
     def sign(self, crt: crypto.X509):
         """ Sign the crt with the CA(CS) private key. """
         crt.sign(self.__CA_KEY__, SHA256)
+
+    def set_authority_key_identifier(self, crt: crypto.X509):
+        """ Set authority key identifier extension. """
+        crt.add_extensions([
+            # The AKID extension specification may have the value none indicating that no AKID shall be included.
+            # Otherwise, it may have the value keyid or issuer or both of them, separated by ,. Either or both can have
+            # the option always, indicated by putting a colon : between the value and this option. For self-signed
+            # certificates the AKID is suppressed unless always is present. By default, the x509, req, and ca apps
+            # behave as if none was given for self-signed certificates and keyid, issuer otherwise.
+            crypto.X509Extension(b"authorityKeyIdentifier", False, b"keyid:always", issuer=self.__CA_CRT__)
+        ])
