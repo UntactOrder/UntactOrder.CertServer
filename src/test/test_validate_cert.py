@@ -17,10 +17,11 @@ CERT_FILE = f"{UNIT_TYPE}.crt"
 KEY_FILE = f"{UNIT_TYPE}.key"
 
 
-with open(f"{CERT_DIR}/rootCA.crt", 'r') as f:
+with open(f"{CERT_DIR}/rootCA.crt", 'r', encoding='utf-8') as f:
     root_ca_cert = crypto.load_certificate(FILETYPE_PEM, f.read().encode('utf-8'))
 
-with open(f"{CERT_DIR}/{CERT_FILE}", 'r') as crt, open(f"{CERT_DIR}/{KEY_FILE}", 'r') as key:
+with open(f"{CERT_DIR}/{CERT_FILE}", 'r', encoding='utf-8') as crt,\
+        open(f"{CERT_DIR}/{KEY_FILE}", 'r', encoding='utf-8') as key:
     cert_obj = crypto.load_certificate(crypto.FILETYPE_PEM, crt.read().encode('utf-8'))
     pk_obj = crypto.load_privatekey(crypto.FILETYPE_PEM, key.read())
 

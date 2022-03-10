@@ -51,7 +51,7 @@ def set_certificate_passphrase():
             print("ERROR: Passphrase is not same. retry.\n")
 
     # write rootCA certificate password to file.
-    with open(f"{CERT_DIR}/{PASS_FILE}", 'w+') as pass_file:
+    with open(f"{CERT_DIR}/{PASS_FILE}", 'w+', encoding='utf-8') as pass_file:
         pass_file.write(__PASSPHRASE__)
     chmod(f"{CERT_DIR}/{PASS_FILE}", 0o600)  # can only root user read and write.
     return __PASSPHRASE__
@@ -115,8 +115,8 @@ def proceed_certificate_authority_generation():
 
     key_dump = crypto.dump_privatekey(FILETYPE_PEM, keypair, cipher='AES256', passphrase=__PASSPHRASE__.encode('utf-8'))
     crt_dump = crypto.dump_certificate(FILETYPE_PEM, crt)
-    with open(path.join(CERT_DIR, KEY_FILE), 'w+') as ca_key_file, \
-            open(path.join(CERT_DIR, CERT_FILE), 'w+') as ca_crt_file:
+    with open(path.join(CERT_DIR, KEY_FILE), 'w+', encoding='utf-8') as ca_key_file, \
+            open(path.join(CERT_DIR, CERT_FILE), 'w+', encoding='utf-8') as ca_crt_file:
         ca_key_file.write(key_dump.decode())
         ca_crt_file.write(crt_dump.decode())
         print("RESULT: Certificate Authority generated successfully.\n")

@@ -65,7 +65,8 @@ def parse_cert_file(response: requests.Response):
     if not os.path.isdir("cert"):
         os.mkdir("cert")
 
-    with open(f"cert/{UNIT_TYPE}.crt", 'w+') as crt, open(f"cert/{UNIT_TYPE}.key", 'w+') as key:
+    with open(f"cert/{UNIT_TYPE}.crt", 'w+', encoding='utf-8') as crt,\
+            open(f"cert/{UNIT_TYPE}.key", 'w+', encoding='utf-8') as key:
         crt.write(cert_file)
         key.write(key_file)
 

@@ -61,7 +61,8 @@ class RootCA(object):
             print("Passphrase entered by redirection.")
             print("Certificate Key entered by redirection.")
         elif OS == "Windows" and path.isfile(f"{CERT_DIR}/{PASS_FILE}"):  # if passphrase file is exist (windows only).
-            with open(f"{CERT_DIR}/{PASS_FILE}", 'r') as pass_file, open(f"{CERT_DIR}/{KEY_FILE}", 'r') as ca_key_file:
+            with open(f"{CERT_DIR}/{PASS_FILE}", 'r', encoding='utf-8') as pass_file,\
+                    open(f"{CERT_DIR}/{KEY_FILE}", 'r', encoding='utf-8') as ca_key_file:
                 __PASSPHRASE__ = pass_file.read().replace('\n', '').replace('\r', '')
                 __CA_ENCRYPTED_KEY__ = ca_key_file.read()
         else:  # formal input.
