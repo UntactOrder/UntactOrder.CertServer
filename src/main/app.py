@@ -54,7 +54,7 @@ def create_app():
             personal_json = request.get_json()
             if not personal_json or len(personal_json) > 1 or True not \
                     in [personal_json[list(personal_json)[-1]].count(i[0]) == i[1] for i in (('.', 3), (':', 7))]:
-                return make_response("Json Parse Error", 400)
+                return make_response("Json Parse Error", 411)
             client_private_ip = next(iter(personal_json.values()))  # get internal IP
         else:  # if BridgeServer unit, then private_ip is not required.
             client_private_ip = ""
