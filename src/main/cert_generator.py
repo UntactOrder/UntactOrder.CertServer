@@ -12,7 +12,7 @@ from geocoder import ipinfo
 from settings import *
 
 # [import root CA certificate.]
-__ROOT_CA__ = RootCA()
+__ROOT_CA = RootCA()
 
 
 def generate_key() -> crypto.PKey:
@@ -55,7 +55,7 @@ def create_certificate(client_type: str, csr: crypto.X509Req, client_public_ip: 
 
     crt.gmtime_adj_notBefore(0)  # start time from now
     crt.gmtime_adj_notAfter(ONE_YEAR * HOW_MANY_YEARS)  # end time
-    __ROOT_CA__.set_issuer(crt)  # set root CA information.
+    __ROOT_CA.set_issuer(crt)  # set root CA information.
     crt.set_subject(csr.get_subject())  # set client information from the CSR.
     crt.set_pubkey(csr.get_pubkey())  # set client public key from the CSR to the crt.
     crt.add_extensions([  # add extensions; crt does not ues domain name, so we need to add subject alternative name.
@@ -71,8 +71,8 @@ def create_certificate(client_type: str, csr: crypto.X509Req, client_public_ip: 
         # IP1: external ip, IP2: internal ip (in case of PosServer)
         # IP: external ip (in case of BridgeServer)
     ])  # if the client's ip is not exists at crt ip list, the certificate will be disabled.
-    __ROOT_CA__.set_authority_key_identifier(crt)
-    __ROOT_CA__.sign(crt)  # sign the crt with the CA(CS) private key.
+    __ROOT_CA.set_authority_key_identifier(crt)
+    __ROOT_CA.sign(crt)  # sign the crt with the CA(CS) private key.
 
     return crypto.dump_certificate(FILETYPE_PEM, crt)  # dump the certificate to bytes.
 

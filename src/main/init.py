@@ -38,28 +38,28 @@ def set_certificate_passphrase():
     """ Get a passphrase for the certificate, and save it to a file. """
     # get rootCA certificate password.
     while True:
-        __PASSPHRASE__ = getpass("Enter passphrase: ").replace(" ", "")
-        if __PASSPHRASE__ == "":
+        __PASSPHRASE = getpass("Enter passphrase: ").replace(" ", "")
+        if __PASSPHRASE == "":
             print("ERROR: passphrase cannot be empty.\n")
             continue
-        elif '$' in __PASSPHRASE__:
+        elif '$' in __PASSPHRASE:
             print("ERROR: you should not use '$' in passphrase for bash auto input compatibility.\n")
             continue
-        elif __PASSPHRASE__ == getpass("Enter passphrase again: ").replace(" ", ""):  # check passphrase is same.
+        elif __PASSPHRASE == getpass("Enter passphrase again: ").replace(" ", ""):  # check passphrase is same.
             break
         else:
             print("ERROR: Passphrase is not same. retry.\n")
 
     # write rootCA certificate password to file.
     with open(f"{CERT_DIR}/{PASS_FILE}", 'w+', encoding='utf-8') as pass_file:
-        pass_file.write(__PASSPHRASE__)
+        pass_file.write(__PASSPHRASE)
     chmod(f"{CERT_DIR}/{PASS_FILE}", 0o600)  # can only root user read and write.
-    return __PASSPHRASE__
+    return __PASSPHRASE
 
 
 def proceed_certificate_authority_generation():
     """ Generate CertServer crt file and key file with a 4096bit RSA key. """
-    __PASSPHRASE__ = set_certificate_passphrase()
+    __PASSPHRASE = set_certificate_passphrase()
 
     keypair = crypto.PKey()
     keypair.generate_key(TYPE_RSA, 4096)
@@ -113,7 +113,7 @@ def proceed_certificate_authority_generation():
     ])
     crt.sign(keypair, 'SHA256')  # sign with the CA(CS) private key.
 
-    key_dump = crypto.dump_privatekey(FILETYPE_PEM, keypair, cipher='AES256', passphrase=__PASSPHRASE__.encode('utf-8'))
+    key_dump = crypto.dump_privatekey(FILETYPE_PEM, keypair, cipher='AES256', passphrase=__PASSPHRASE.encode('utf-8'))
     crt_dump = crypto.dump_certificate(FILETYPE_PEM, crt)
     with open(path.join(CERT_DIR, KEY_FILE), 'w+', encoding='utf-8') as ca_key_file, \
             open(path.join(CERT_DIR, CERT_FILE), 'w+', encoding='utf-8') as ca_crt_file:

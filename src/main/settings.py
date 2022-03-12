@@ -51,11 +51,11 @@ class RootCA(object):
         #
         # check if redirection flag is set.
         if [i for i, arg in enumerate(sys.argv) if '--po=' in arg]:  # if --po= is in argv => redirect.
-            __PASSPHRASE__ = input()
-            __CA_ENCRYPTED_KEY__ = ""
+            __PASSPHRASE = input()
+            __CA_ENCRYPTED_KEY = ""
             while True:
                 try:
-                    __CA_ENCRYPTED_KEY__ += input() + '\n'
+                    __CA_ENCRYPTED_KEY += input() + '\n'
                 except EOFError:
                     break
             print("Passphrase entered by redirection.")
@@ -63,31 +63,31 @@ class RootCA(object):
         elif OS == "Windows" and path.isfile(f"{CERT_DIR}/{PASS_FILE}"):  # if passphrase file is exist (windows only).
             with open(f"{CERT_DIR}/{PASS_FILE}", 'r', encoding='utf-8') as pass_file,\
                     open(f"{CERT_DIR}/{KEY_FILE}", 'r', encoding='utf-8') as ca_key_file:
-                __PASSPHRASE__ = pass_file.read().replace('\n', '').replace('\r', '')
-                __CA_ENCRYPTED_KEY__ = ca_key_file.read()
+                __PASSPHRASE = pass_file.read().replace('\n', '').replace('\r', '')
+                __CA_ENCRYPTED_KEY = ca_key_file.read()
         else:  # formal input.
-            __PASSPHRASE__ = getpass("Enter passphrase: ")
-            __CA_ENCRYPTED_KEY__ = getpass("Enter certificate key: ") + '\n'
+            __PASSPHRASE = getpass("Enter passphrase: ")
+            __CA_ENCRYPTED_KEY = getpass("Enter certificate key: ") + '\n'
             while True:
                 try:
                     # since some errors were found when I used getpass, I replace them with input.
                     # this is just a countermeasure that I added just in case, so please use redirection if possible.
-                    __CA_ENCRYPTED_KEY__ += input() + '\n'
+                    __CA_ENCRYPTED_KEY += input() + '\n'
                 except KeyboardInterrupt:
                     break
 
-        self.__CA_KEY__ = crypto.load_privatekey(
-            FILETYPE_PEM, __CA_ENCRYPTED_KEY__, passphrase=__PASSPHRASE__.encode('utf-8'))
+        self.__CA_KEY = crypto.load_privatekey(
+            FILETYPE_PEM, __CA_ENCRYPTED_KEY, passphrase=__PASSPHRASE.encode('utf-8'))
         with open(path.join(CERT_DIR, CERT_FILE), 'r') as ca_crt_file:
-            self.__CA_CRT__ = crypto.load_certificate(FILETYPE_PEM, ca_crt_file.read().encode('utf-8'))
+            self.__CA_CRT = crypto.load_certificate(FILETYPE_PEM, ca_crt_file.read().encode('utf-8'))
 
     def set_issuer(self, crt: crypto.X509):
         """ Set root CA information."""
-        crt.set_issuer(self.__CA_CRT__.get_subject())
+        crt.set_issuer(self.__CA_CRT.get_subject())
 
     def sign(self, crt: crypto.X509):
         """ Sign the crt with the CA(CS) private key. """
-        crt.sign(self.__CA_KEY__, SHA256)
+        crt.sign(self.__CA_KEY, SHA256)
 
     def set_authority_key_identifier(self, crt: crypto.X509):
         """ Set authority key identifier extension. """
@@ -97,5 +97,5 @@ class RootCA(object):
             # the option always, indicated by putting a colon : between the value and this option. For self-signed
             # certificates the AKID is suppressed unless always is present. By default, the x509, req, and ca apps
             # behave as if none was given for self-signed certificates and keyid, issuer otherwise.
-            crypto.X509Extension(b"authorityKeyIdentifier", False, b"keyid:always", issuer=self.__CA_CRT__)
+            crypto.X509Extension(b"authorityKeyIdentifier", False, b"keyid:always", issuer=self.__CA_CRT)
         ])
