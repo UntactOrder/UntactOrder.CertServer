@@ -37,7 +37,8 @@ def create_app():
     @server_inspection_time_noticer
     def index():
         """ To check if the server is running """
-        return f"Hello, {request.environ.get('HTTP_X_REAL_IP', request.remote_addr)}!"
+        #return f"Hello, {request.environ.get('HTTP_X_REAL_IP', request.remote_addr)}!"
+        return "Hello, World!"
 
     @app.route('/cert_request/<unit_type>', methods=['POST'])
     @server_inspection_time_noticer
