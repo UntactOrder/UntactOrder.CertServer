@@ -23,11 +23,10 @@ UntactOrder Cert Server(언택트오더 시스템 인증서 서버) <python 3.10
 ### [EN] Development Environment / [KO] 개발 환경
 * IntelliJ IDEA Ultimate 2021.3 (or up)
 * Python 3.10.2 (or up)
-* [Oracle Cloud Free Tier; OCI] Canonical Ubuntu 20.04 LTS (Image Build: 2022.01.18-0)
-* [OCI] VM.Standard.E2.1.Micro (1 core OCPU, 1 GB memory, 0.48 Gbps network bandwidth)
+* Ubuntu 20.04 LTS
 
 ### [EN] Programming Language / [KO] 사용 언어
-* Python 3
+* Python 3.10
 
 ### [EN] Required Modules / [KO] 필요 모듈
 * see requirements.txt
