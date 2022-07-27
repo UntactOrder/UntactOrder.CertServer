@@ -34,7 +34,7 @@ class UnitType(object):
     unit_text = "A % Instance"
     CERT = unit_text.replace('%', "CertServer")
     BRIDGE = unit_text.replace('%', "BridgeServer")
-    POS = unit_text.replace('%', "PosServer")
+    POS = unit_text.replace('%', "OrderBroker")
 
 
 class RootCA(object):
