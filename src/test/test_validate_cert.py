@@ -27,7 +27,7 @@ with open(f"{CERT_DIR}/{CERT_FILE}", 'r', encoding='utf-8') as crt,\
 
 
 # check if cert and key are matched
-context = SSL.Context(SSL.TLSv1_METHOD)
+context = SSL.Context(SSL.TLSv1_2_METHOD)
 context.use_privatekey(pk_obj)
 context.use_certificate(cert_obj)
 try:
